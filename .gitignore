@@ -1,0 +1,7 @@
+
+*.log
+*.cfg
+
+tmp/
+__pycache__/
+

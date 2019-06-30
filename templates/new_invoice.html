@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<!-- <meta name="viewport" content="width=1024px"> -->
+	<title>Document</title>
+	<link rel="icon" href="data:,">
+
+	<!-- <link rel="stylesheet" href="{{style_link}}"> -->
+
+	<style>
+			
+			
+			body {
+					  margin: 0;
+					  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+					  font-size: 1rem;
+					  font-weight: 400;
+					  line-height: 1.5;
+					  color: #212529;
+					  text-align: left;
+					  background-color: #fff;
+				}
+				
+			.container {
+					  width: 100%;
+					  padding-right: 15px;
+					  padding-left: 15px;
+					  margin-right: auto;
+					  margin-left: auto;
+					}
+
+			.text-right {
+					 text-align: right;
+				}
+
+			h1{
+					 margin-top: 6%;
+			}
+
+			h5{
+					 margin-top: 0;
+			  		 margin-bottom: 0.5rem;
+			  		 font-size: large;
+			  		 font-weight: 600;
+			}
+
+			#Right_name{
+				margin-top: 0px;
+			}
+
+			.summary td {
+					 text-align: right;
+			}
+
+			/*.page{
+			    	 margin-left: 20%;
+			   	 	 margin-right: 20%;
+			    	 padding-left: 4%;
+			    	 padding-right: 4%
+			}*/
+
+			img{
+				 	 margin-left: 67%;
+				 	 position: relative;
+			     	 top: 2px;
+			     	 height: 150px;
+			} 	
+
+			/*#Invoice_and_Image{
+					 display: flex;
+					 flex-direction: row;
+					 position: relative;
+			}*/
+
+			#Address_and_Numbers{
+					 display: flex;
+					 flex-direction: row;
+					 position: relative;
+					 font-size: 16px;
+			}
+
+			#Number_taken_right{
+
+				 	 padding-left: 285px;
+				 	 float: right !important;
+			 }
+				 
+			table{
+			 		 width: 100%;	
+			 		 border-collapse: collapse;
+			 		 display: table !important;
+			 		 margin-bottom: 1rem;
+			  		 background-color: transparent;
+			 }
+
+			#Invoice_and_Image table{
+					 width: 100%;	
+			 		 border-collapse: collapse;
+			 		 display: table !important;
+			 		 margin-bottom: 1rem;
+			  		 background-color: transparent;
+			}
+
+			.table th,
+			.table td {
+					 padding: 0.75rem;
+					 vertical-align: top;
+					 border-top: 1px solid #dee2e6;
+			}
+
+			.table thead th {
+					 vertical-align: bottom;
+					 border-bottom: 2px solid #dee2e6;
+			}
+
+			.table tbody + tbody {
+					 border-top: 2px solid #dee2e6;
+			}
+
+			.table-striped tbody tr:nth-of-type(odd) {
+					 background-color: rgba(0, 0, 0, 0.01);
+			}
+
+			#Bottom_table_taken td {
+					 padding-right: 30px;
+			    	 block-size: inherit;
+			    	 /*font-size: large;*/
+			}
+
+			#Top_table_taken{
+					 /*font-size: large;*/
+			}
+
+			footer{
+					 font-size: large;
+			    	 font-weight: 320;
+			}
+
+			#lower_table{
+					 margin-left: 50%;		 
+			}
+						
+
+	</style>
+
+	 
+</head>
+<body>
+	
+	<div class="container">
+			
+		<div class="page">
+			<div>
+				
+				
+				<table>
+					<td><h1 style=> Invoice </h1></td>
+					<td>
+						<!-- <img src="{{image_link}}" alt="ecardex_logo" class="text-right" style="top: 2px;"> -->
+						<img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxITEhUQERMSFRUWGBcXGBYVFxIZFhcbGhYWGBYVFxcYHTQgGBomHBYXITElJSkrLzEuGB8zODMsNygtLisBCgoKDg0OGhAQGzImICUtLS01Mi0tLS0uLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAOAA4AMBEQACEQEDEQH/xAAbAAEAAgMBAQAAAAAAAAAAAAAABAUCAwYHAf/EAEUQAAIBAgMDCQIJCgYDAAAAAAECAAMRBBIhBQYxEyIyQVFhcYGRcrEHFBYjQlSCodEzQ1Nig5KTwdLwFSSio7LhNFJz/8QAGgEBAAIDAQAAAAAAAAAAAAAAAAIEAQMFBv/EAC4RAQACAQMEAQIDCQEAAAAAAAABAgMEETEFEiFBExRRMkJhIiMkUnGRobHRQ//aAAwDAQACEQMRAD8A9xgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLwEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAp9o7VTlDgwWWo6HKw0AJU21vx0kr6e98NrVVr6mkZPinmXIpj6ymwqVARxGZuPXoZ5f58tJmO6UO60JVPeDEj6d/FV/Cba67NHtL5bJdPeqqOkiHwzD+c3V6neOYSjLKXS3tX6VJh4MD7wJvr1OvuEvmj7JdPeigeOdfFfwvN1eo4Z5ZjLVLpbaw7cKqeZI983V1eG3FkovWfaXSxKN0WVvAg+6bq3i3Ce+7PMJIaquMpr0nUeJA98hOSleZY3hEq7dw6/nFPhc+6aZ1eGPzI99USrvTRHAO3gPxImm3UcMcIzlrCHV3t/8AWkfNgPcJot1OPy1R+ZEq70VjwVB6k++abdSyTxEMTmlH/wAZxLsFD6sQAAF4nh1TXGsz3tERPKPyWnw6ehtiny3xS7GoFuTbm8LkX7bT0cYbxji88M11VJy/F7WsgskBAQEBAQEBAQECu3gFX4tV5AkVAhKkcbjWw7yAR5wPPfjr18PSxeYmtQfI7dZF81Jz948Zf0VonfHPtyOp45r25q8wstrgMVrp0ay5/BuDr5H3zynU9N8Wafss93fWLxxLKtQpZ/iyh+VCBgxIyucmcqB1acD3S7fpEfS/NWUPmp8vxe9t1dOCmQECeHFKmhCIWfMxLqGstwq2v4MZb7vixxtEbz58p79sMP8AFK3APl9kIv8AxEh9Vl9Sd8tFTEu3Sd28WY++a5y3nmUd5arSATDBAQEC12AgUviH6NFSfE20Hp7xOn0vBOTLulFopWbz6VIxz0qNbGk2q1W5OmesEnNUYeAFh3z1WttFYrij0qdNpN7Wz298O93ZNU4Wka7FqhXMSbX1JKg94UgeU57rrSAgICAgICAgICAgeZ/FBhtoVcI2lHFCy9gz3NMj2Xuok6WmtotHpry44yUms+2/ZQLUa2Ffp0SaijuBtUUe/wA463p4y4oyVcnQ2na2G3MI2L20aSo5pI7KMi1SWzIpBHAaNoWAvwnJ0WryXxWwzPpfpWtrd0x5hL2I4WspNusAngGIIUnztOdpZiuXyY/xJ+JpqVFTGCotTMV5gQFwADmIOmhJFxLOStZr3ZvE7+vacxG290MLhSQqjEkkgD8l16CV4jTzMRG6MRSZ8bt+ObDFypNcZLUxl5Miy6devb6zbmnBNtp38eCZp7alw+FP56ovjTv7prjHp5/NP9jbH921dnYY8MUo8UI95k40+Cf/AEZ7K/dtXYVM9HFUj6f1ScaKk8Xhn44+7Tj9nphU5aqRWBIVUUlQSbnnN1CwMu6LpNcuTa07w0ai9cFO+fKHtFEDKyAqHRHyk3K5hfL/AH2zna/DXDmmlUt4mItHuEWUmCBY7dvTw9LCL+UqkO46+PNU+dh9mey6Np4xU77elXqF/wBiuGOZQK+DGIxtDALrSw4s/YSLNWPm1k8ZjJeb2m0ulgxRjxxV6aBNbc+wEBAQEBAQEBAQEDjvhK2aXoriU6dE6kccrEa+TZT6zMCnfH2qYfaC8Kg+cA4Zl5lUW7xqPWdHBtmw2xT6cXVx8GprljiWO3tngM9IdE6oeqx1Q/32TxtonTahf37bbxwqqJxGULlpiwAuxJP+mSv9NNu7eWZinLeRXa2aqumgspNh2DMZrtlwTxEz/VibVTNmYVs5dqtSyKz6CmNR0fo8cxEngyVm0zFeI3ZrMb8IbUqnVUv7ag/etpq+XHM72r/lGLRPMMTUrD6CN7LEf8pKKae35pj+sbs7VlgdoEdOlVXvABHrJfSd34bwdm/t9TalI/St4gj+UxOizR63Jx2WWB2qiqUtRqKSGyvZgGHBrTZgzajTb9scsbeNrRuxr1mdi7G5OpMpZL2vabW5YmZnlhIMJ+w8JylZQeiOc3gP+7S1o8XyZY+yeON5avj4evXx7apQW6A8C3Ror5nWe0zfucEY45lz9N/Eaqck8Rwsfg02cRTqYt9XqsQCeOUHnHza/wC6Jz5dt2swEBAQEBAQEBAQEBA1YrDrURqbi6sCpHcRYwPL9l4Zh8a2a/TQmrS72TpAe0liPCWNPl+PJEqmtw/LimPceVhRqcthUfi1E8m3sH8mfLh6zn9e0vbb5IVNHk+TBt7jw04RVLoH0UsoPhcXnnsURN4i3CzWPMbrPE06IDO1F1KvkyBiFOhIJJF+A6u7tlzJTFETa1dvOzZaK8zD4uMC0SwpUhnbKFIY3VRc3JNzqV7OEx8sUxbxWPMnfEV4aFqYZuklSme1GzL4kNr6Gau7Bb8UbI709vtXB0UQ1jWz01sCEW1Qk9FbNoOvXulzSdNjUX2pbeEMtqYqTeeEbG0lUqULZWRXGa2YBhext1ynrNPGDLNIPExEx7Q6lBW6SqfECaa5b14mWYmY4QsVshWBFNDnPRAvqeyxl7TazLN4rad4bKXneIlb0tkVKVEZnpsUsrhGzFL9ENp5SOtwx3Tek+C9fcNM57Vus6lTkMEz8HrnIvaF1ufTN6iel6Hpd5i8w06vJ8WCfvPhS7VotyeG2fT/AClZhVqdxbm0we4LcmdHU5e/JM+uG/QYPiwxE8z5eoYHCrSppSQWVFCjwAtKy63wEBAQEBAQEBAQEBAQOA3+oNh8RQ2hTH0grd5XUA+0uZfKZGGFyU8WUB+YxSgqeq1TVD5Ncecv56RqdJ55hw6fw+rmn5bIlakVYo3EEg+U8Jes1tNZ9L8+J2ZVcQ7ABmZgvAEk28JK+S1o2mSZmeUtAtRFW5UoDw541NyzKvPTXrsV04zp49JXU4Y7LeY9MTbx5jwi1sKygMQCp4OpDIfBhpKGbS5cM/twR5jeGWFxWUMrIjq1rq40uOB08ZLS6u+mmZp7J2mNrRvDXXrF2LNxPp3ADqAE0ZMlslptY33a5ATNkMBUGoUlXCseAYqQpPZrLGl27/Mp0/E3VqYo0mpllNSplBCm4VVN9T2k207JstHw0mszvaWZjtiYQsJQNR1pjixt4dp8hcyvip33isNdY3nZN2oVr4xaOgo4dTm7AqC9Q/cF8p7nBX6fTb+5Us38Rq4xxxVjuPSOJxdbHuNASEB6iwsB9mnYfalCXbegTAQEBAQEBAQEBAQEBAQK3ePZoxGHqUethde5hqv3geRMDzjAuauDy6iphW8+Tc+9XB8BLujybX7Z4ly+p4ZnHF68wuNovyqU8SPzi5X7nXQ+s871jTTizb+mzHkjLjreECcdNlTexuVVvEcD2qw5yt3qQZvw574Z3qzW01lOoYjUlHKseOYgE/tLZamnVVUn9edrB1Kl47b/AOTtpad48SyqUlY5XQq51GQWY9/Ik2qDvpM3hJZen4M0b0naWLRev4o3/WP+I1TBNYshFRRxKXJHcy9JT4icnPoM2HmPDETE8I0pBAQLbZDClTq4tvoDKl+tj/2VHmZ2uj6acl9y14xY7XlQYuqaWDZj+UxTFR28mhu5+0xA7wZ6LW3ibRSOIaOmYpis5bcy9D3X2Z8Xw1OkelbM/tNq3pw8hKDqraAgICAgICAgICAgICAgIHnG16Iwm0sxHzOJBD9ln0qejWfzkqzt5hG9YtWay2bJoENXwD9IEvT72Xs9pbTf1XB9Rp4yRy42in48l8Fv6whGeKmJ32Xd0ungG0z8y/AEEu3s0xzj6W75dwdPzZfO20fqTtHKThKIJy0aZqMNCea9j3m/JUz4l2/VnXxaDBh8z+1P+E60vb9P9r/B7Ec/+Q4ZTqaXTUm2mZqg1t1ZAg7pZtbdYpTs9scZu+b56Lm44B2a47lrDnqO5s47pKt5jwjfDW3n3+inxlOxtiKZBOgc5EY+FQfNVT3HI3dK+bSYM3MbS0zjvX9f9olTZpJIpnORqUIK1R4021t3i85OfpmXH5r5hCNpnwhhDfLY5r2t137Lds58UmZ7dvLO3nZYbwIf8vs+n0tGf2m0Hpdj6T23S8MYMM3n1Clr7Te1cFfaJgMOMVtJVXWhhQAOwimbD1qa94Er2tvO8uvSkUrFY9PSZBMgICAgICAgICAgICAgICBzHwg7K5bCllF3pc8dpHBx6a/ZEDl8PiBiEpYinWp08RSULUFR1TNl0WqpbQ3HH08bun1FaVnHfhzNZpL3yRkxTtK8wpxFc5lSkSeNWmvJqe/lnBZtP0a/aEq2pgrbupX+7fSma0fvJiP6f9W2E3bTXlm5S/FRdaZ9oXLVf2jN4CYm0zysUxVpxC6p0woCqAANAAAAPACRbGcBAxdAQQQCDoQdQfEQKXGbuIR8yeTtqEILUh7K3Bp/s2Xzma2mvEoXx1tzCsxFXFUNWCacKlQGogH/ANUs6C36Rba9IydYwzbe9f7K98easfu5/uoquI+Lipi6tam+IcEUhTdXsWFuUJXQADhLOfUVtSMeONoVtJpMlck5cvLofg62XyWG5Vhzqxzd+UaIPe32pSl1HVwEBAQEBAQEBAQEBAQEBAQBECqobt4RH5VaFMNe97XAPaFOi+QgWsBAQEBAQEBAqcTuzg3flHoUy173tYE/rAaN5iBagW0gfYCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBR7d3kpYchCC78cotoOok9Us4NLfL5jxClqdbTBO0+ZRdkb30qrimymmW0BJBUnsv1GTy6O9K90TvDVg6lTJbtmNpdKJTdJ9gICAgICBRbY2zVpVMiU8wsDezdd+yUdRqcmO21a7tdrzE7RCD8pa/6AejzT9dm/k/2h8lvskYDb1Z6io1IAMbE2bT1k8Wry3vETXaEq3mZ8ww3q3uXCMtNU5SoRmteyqLkAk2NybHSdFtUw35xf1JvSr/AEwJ+wt68RWrpRqYU01bNd/nNLKzDituIA84HXOwAJJsBqServgcTsrf7lcStE01Wm7FVe5vrfISLdeg84HcQOExG+uKV2UYMkBiAbVdQCQD0YGpt+8UBdsGQBxJ5QD1KwOl3X3iTGU2ZVKMhAZSb2vwIPWDY+hgc4d+MX9Sb0q/0wMH39xKjM+DIA4k8oB6ldJnYdXu9t1MXR5VAVIJDKdSptfj1ix4zA5Yb84v6k3pV/pgPlzi/qTelX+mBebB23iMRSqsaApulsivnAbQnUkadl4Efd3e7l6rYavT5GqCQq3OpHSXXgw++ZmBxm+Cv8YrXvfOT9n6P3WnTtEzpo7HCpNa623yqrZ6t1X1tbx6rTOji0Vt3cM9StSbV7Pxfo9wo3sL8bC/j1zlzz4dqu/bG7OYSICAgICBQ7Y2vWpVMiU8wsDeznjfslDUajJjttWu7Xa9onxCF8osR+gH7tSaPrM/8iPyW+zfgNuV3qIjUrBjYmz6es2YtVlteItXaGa3tM8KHHqDtymCL9E691EkffrOk2vQoCBy3wibV5HCmmDzq10+z+cPpZftQOY2vuwaWz6VcAiqhz1LcbPa3mtk/wBUDvN2tqfGcNTrfSIs3cw0b79fAiByuM31xiM/+U5qlhmK1QLAkXJtaZEWnv8A4qpdaeHRmt9EVHt3kCBbfB1sarRWrVrKUNQqApFjZc2pHVctw7okdlMDXXQFWUi4IIIPAgjUGBwfwUMcmI8afueJHwb6476kf3K34TOw+/LXHfUj+5W/CNh0W6m2K2JVzWomkVIAFnF7g3POmBQ/CTs2koTFqwp1swAtxqW4EW4Muhv2C3ZMwKndTBDHVaz4iu2ewOUWzHqzai2UaCw7erS9jFqb4uOFTUaPHn825dnsrdShRcVOc7DgXtYHtAA4+Mzl1eTJG08NeDp+LFPdzP6r8SqvkBAQEBAQKLbG1MRTqZKdLMtgb5XOp4i40lHUajJjvtWu7Xa8xPiEH/HsX+g/26v4zR9Zn/kR+S32SMBtjEvUVHo2UmxOSoLeZNpsxarLa8VtRmt5mfMKXfHZeJTFpj8MhewFwoLEMtxqo1KlTbTv4aTotrX8sNo/Uj/CxEyJ+wd5cbWrpSrYU00bNmfk6wtZGI1bQagDzmBBx+Dq4zaah6dQUKWl2RgrBDdrEixzPpp1QO7xNBaiNTcXVgVI7QRYwOJ3EpV8NiK2EqJUyEkq+RshZdLhrW5y2PH6Npkd0RfQzA4PeLdSpRf43s/MrLqaa8R2lB1jtT07JkdBuztt665a1GrSqqNcyOqN3qWH3cfGYHOHfDaP1I/wsRA1V969pOpRcIykgi4o1yRfrF9LzIutwNi1MNQdqq5XqEHL1hVFlv36nTwmBU/LHaP1I/wsRAfLHaP1I/wsRAvdgber1KVWriaD0+TtZVp1czaHoq2rG9hpA53A7Lr7QxRr4tHp0U4IwZbjiKagjzZv7GRv3q3eqUKq47AqQQeciKTY8MwUcVPAjv8AGwdfsTaBr0lqNTem3BkdWUg9dsw1HYf5zAsICAgICAgICAjYICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgf//Z" alt="ecardex_logo" class="text-right" style="top: 2px;" />
+					</td>
+				</table>
+								
+				<table>
+					
+					<tbody>
+						
+						<td>
+							<p><b>From</b><br>Ecardex Ventures <br> 08, Ladipo kuku street, <br> Opebi road <br> Ikeja, Lagos, 23401 <br> Nigeria.</p>
+							<p><b>To</b><br>{{ name | title }} <br> {{ address | title }} <br> {{ post_addr | title }} <br> Nigeria.</p>
+						</td>
+						<td>
+							<br><b>Invoice No.</b><br>
+							<p>{{ invoice_no }}</p>
+							<b>Date</b><br>
+							<p>{{ date_value }}</p>
+							<b>Invoice Due</b><br>
+							<p>{{ invoice_due }}</p>
+							<b>Purchase Order No.</b><br>
+							<p>{{ purchase_order_no }}</p>
+						</td>
+						
+					</tbody>
+
+				</table>
+
+				
+				<div id="table" class="table">
+					
+						<table id="Top_table_taken" class="table table-striped">
+							<thead> 
+								<tr>
+									<th scope="col">Description</th>
+									<th scope="col" style="text-align: center;">Quantity</th>
+									<th scope="col" style="text-align: right; padding-right: 18px;">Rate</th>
+									<th scope="col" style="text-align: right; padding-right: 40px;">Amount</th>				
+								</tr>
+							</thead>
+							<tbody> 
+								{% for post in posts %}
+								<tr>
+									<td> {{ post.item_desc | title }} </td>
+									<td style="text-align: center;"> {{ post.qty }} </td>
+									<td style="text-align: right; "> {{ cur_fmt(post.rate) }} </td>
+									<td style="text-align: right; padding-right: 30px;"> {{ cur_fmt(post.amount) }} </td>
+								</tr>
+								{%endfor%}
+							</tbody>
+						</table>
+										
+						
+						<div id="lower_table">
+
+						<table id="Bottom_table_taken" class="table table-hover summary">
+							<tbody>
+								
+								<tr>
+									<th scope="row">Sub Total</th>
+									<td> {{ subtotal }} </td>
+								</tr>
+
+								<tr>
+									<th scope="row">Discount applied ({{disc_type}})</th>
+									<td> {{ discount_applied }} </td>
+								</tr>
+
+								<tr>
+									<th scope="row">Total </th>
+									<td> {{ cur_fmt(total) }} </td>
+								</tr>
+
+								<tr>
+									<th scope="row">Paid to Date</th>
+									<td> {{ cur_fmt(paid_to_date) }} </td>
+								</tr>
+
+								<tr style="border-bottom: 2px solid #343a40;">
+									<th>Balance</th>
+									<td> {{ cur_fmt(balance) }} </td>
+								</tr>
+									
+								
+							</tbody>
+						</table> 	
+
+						</div>
+
+				</div>	
+						
+				
+
+				
+				
+				
+				<div id="Footer" class="col">
+					<footer>
+						<p>				
+							Email: support@ecardex.com
+						</p>
+					</footer>
+				</div>
+				
+
+
+			</div>
+		
+	
+
+		</div>
+				
+		
+	</div>
+			
+			
+		 
+</body>
+</html>
