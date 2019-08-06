@@ -1,6 +1,6 @@
 
 CREATE TABLE IF NOT EXISTS item (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	item_desc varchar(150),
 	qty int,
 	rate int,

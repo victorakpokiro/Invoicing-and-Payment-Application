@@ -7,6 +7,9 @@ import records
 import json
 
 
+from applib.sub_routes.admin import mod 
+import applib.sub_routes.admin as ad 
+
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
@@ -16,10 +19,8 @@ api = Api(app)
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
  
-
-	
-
-
+ 
+app.register_blueprint(ad.mod)
 
 api.add_resource(InvoiceApi, '/invoice/gen', methods=['POST'])
 

@@ -63,9 +63,7 @@ class InvoiceApi(Resource):
                             sub_total_amount, 
                             billing['disc_value'], 
                             billing['disc_type'])
-
-       
-
+    
 
             balance_amt = total_amt - float(billing['amtPaid'])     
             _json_obj_invoice = {
@@ -76,7 +74,7 @@ class InvoiceApi(Resource):
                 'postaladdress': customer['postal_code'],
                 'disc_type': billing['disc_type'],
                 'disc_value': billing['disc_value'],
-                'purch_no': rows_count_numb,
+                'purchase_no': rows_count_numb,
                 'invoiceno': 'INV-' + str(rows_count_numb),
                 'datevalue': date,
                 'invoicedue': date,
@@ -89,15 +87,16 @@ class InvoiceApi(Resource):
 
 
             sql_insert_invoice_table = """INSERT INTO invoice ( name, address, email, phone, post_addr, disc_type, 
-                                                      disc_value, purch_no, invoice_no, date_value, 
+                                                      disc_value, purchase_no, invoice_no, date_value, 
                                                       invoice_due, paid_to_date, balance, sub_total, total, currency)
                                                 VALUES ( :name, :address, :email, :phone, :postaladdress, 
-                                                        :disc_type, :disc_value, :purch_no, :invoiceno, 
+                                                        :disc_type, :disc_value, :purchase_no, :invoiceno, 
                                                         :datevalue, :invoicedue, :amtPaid, :balance, :subtotal, 
                                                         :total, :currency )"""
           
             resp = db.query(sql_insert_invoice_table, **_json_obj_invoice)
 
+            #recheck this for postgres syntax
             last_id = db.query('SELECT last_insert_id() as id')
             _id = last_id.all()[0].id
             

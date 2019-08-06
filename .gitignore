@@ -1,6 +1,7 @@
 
 *.log
 *.cfg
+*.pdf
 
 tmp/
 __pycache__/

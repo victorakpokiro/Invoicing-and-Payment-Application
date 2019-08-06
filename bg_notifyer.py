@@ -130,23 +130,18 @@ def notification_handler():
         email_qry = db.query(email_sql, **email_param)
         last_id = email_qry.all()[0].reference
 
+
         inv_param = {'inv_id': last_id}
         inv_sql = "select * from invoice where inv_id=:inv_id"
         inv_qry = db.query(inv_sql, **inv_param)
         _output = inv_qry.all()
 
-        # import pudb;pudb.set_trace()
+
         itm_param = {'id':last_id}
         itm_sql = "select * from item where invoice_id =:id"
         itm_qry = db.query(itm_sql, **itm_param)
         posts = itm_qry.as_dict()
 
-
-        # sub_total = format_currency( _output[0].sub_total, 'NGN', locale='en_US')
-        # disc_value = format_currency( _output[0].disc_value, 'NGN', locale='en_US')
-        # total = format_currency( _output[0].total, 'NGN', locale='en_US')
-        # paid_to_date = format_currency( _output[0].paid_to_date, 'NGN', locale='en_US')
-        # balance = format_currency( _output[0].balance, 'NGN', locale='en_US')
 
         params = {
                     'invoice_no': _output[0].invoice_no,
@@ -191,15 +186,15 @@ def comma_separation(amt):
 
 def template_render(args, kwargs):
 
-    env = Environment(loader=FileSystemLoader('templates/'))
+    env = Environment(loader=FileSystemLoader('invoice_template/'))
     template = env.get_template('new_invoice.html')
     _template = template.render(posts=args, **kwargs)
 
     pdf_output = 'invoice_%d.pdf'%random.randrange(10000)  #when rendering with flask this library requires a co plte directory for the style and image file
     pdfkit.from_string(_template, pdf_output, {'orientation': 'Portrait'})
 
-    # send_email(pdf_output, "victorakpokiro@gmail.com", 
-    #               "favourakpokiro@gmail.com", "message subject")
+    send_email(pdf_output, "victorakpokiro@gmail.com", 
+                  "favourakpokiro@gmail.com", "message subject")
 
 
 

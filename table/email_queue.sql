@@ -1,9 +1,9 @@
 
 CREATE TABLE IF NOT EXISTS email_queue (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	field varchar(150),
 	reference varchar(20),
-	date_created datetime,
+	date_created date,
 	status int
 );
 
