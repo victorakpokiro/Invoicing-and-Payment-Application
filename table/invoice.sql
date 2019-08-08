@@ -1,6 +1,6 @@
 
 CREATE TABLE IF NOT EXISTS invoice (
-    inv_id SERIAL PRIMARY KEY ,
+    inv_id BIGSERIAL PRIMARY KEY ,
     name varchar(50),
 	address Text,
 	email varchar(150),
@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS invoice (
 	disc_value varchar(10),
     purchase_no int,
     invoice_no varchar(30),
-    date_value date,
-    invoice_due date,
+    date_value datetime,
+    invoice_due datetime,
     currency varchar(3)
 );
 

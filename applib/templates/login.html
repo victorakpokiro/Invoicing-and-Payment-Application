@@ -37,11 +37,11 @@
 						<input class="form-control" type="text" placeholder="Enter your username..." name="usr_name" style="margin-bottom: 3px" required>
 						{% with messages = get_flashed_messages() %}
 							{% if messages %}
-									{% for message in messages %}
-					       				<span class="text-danger" role="alert" style="font-size: 14px"> 
-					       					<ul><li>{{ message }}</li></ul> 
-					       				</span>
-									{% endfor %}
+								{% for message in messages %}
+				       				<span class="text-danger" role="alert" style="font-size: 14px"> 
+				       					<ul><li>{{ message }}</li></ul> 
+				       				</span>
+								{% endfor %}
 							{% endif %}
 						{% endwith %}
 					</div>

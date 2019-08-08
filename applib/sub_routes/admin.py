@@ -1,18 +1,18 @@
 
-from flask import Blueprint, request, url_for, render_template, redirect, session, flash
-from applib.model import db_session
-from werkzeug.security import check_password_hash, generate_password_hash
-import records
-from wtforms import form, validators, fields
-from wtforms.form import Form
-from wtforms.fields import StringField, SubmitField, DateField, IntegerField, TextAreaField, SelectField
-from wtforms.validators import ValidationError, InputRequired, Length, Email
-
 import os
 import subprocess
 import pdfkit
 import base64
 import arrow
+import datetime
+
+from flask import Blueprint, request, url_for, render_template, redirect, session, flash
+from applib.model import db_session
+
+from applib import model as m 
+
+from werkzeug.security import check_password_hash, generate_password_hash
+import records
 
 import email, smtplib, ssl
 from email import encoders
@@ -24,103 +24,19 @@ from jinja2 import Template
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 import random 
 
+from applib.forms import (ItemForm, DiscountFrm, CreateInvoiceForm)
+
+# from applib.main import login_manager
+
+from flask_login import login_user, login_required, logout_user
+
+# +-------------------------+-------------------------+
+# +-------------------------+-------------------------+
+
 mod = Blueprint('admin', __name__, url_prefix='/admin')
 
-
-def input_required():
-
-    def check_length( form, field ):
-        if not field.data:
-            raise ValidationError("input is required")
-
-    return check_length
-
-
-def length( min=3, max=12 ):
-
-    def _length(form, field):
-
-        _field = str(field.data)
-        if len(_field) < min:
-            raise ValidationError("Length of field must be greater than %d"%min)
-
-        if len(_field) > max:
-            raise ValidationError("Length of Field Exceeded")
-
-    return _length
-
-def check_inp_length():
-
-    def validate_amount(form, field):
-        try: 
-            float(field.data)
-        except Exception as e:
-            raise ValidationError('Valid Amount or Input Required.')
-
-    return validate_amount
-
-
-class DiscountFrm(Form):
-    discount_type = SelectField('Discount Type :', 
-                                choices=[('select', 'Select...'), 
-                                         ('fixed', 'Fixed'), 
-                                         ('percent', 'Percentage')], 
-                                render_kw={"class_": "form-control", 
-                                           "style": "margin-bottom : 10px"})
-
-    discount = IntegerField('Discount Applied :', [length(min=1)], 
-                            render_kw={"class_": "form-control", 
-                                       "autocomplete": "off"})
-
-    disc_amt = IntegerField('Discount Value :', 
-                            render_kw={"class_": "form-control", 
-                                       "readonly": "readonly"})
-
-    sub_total = IntegerField('Sub-Total :', [check_inp_length()], 
-                             render_kw={"class_": "form-control", 
-                                        "readonly": "readonly"})
-
-    new_total = IntegerField('New Total :', 
-                             render_kw={"class_": "form-control", 
-                                     "readonly": "readonly"
-                                    })
-
-
-class CreateInvoiceForm(Form):
-    name = StringField('Name :', [InputRequired()], 
-                                render_kw={"class_": "form-control", 
-                                            "autocomplete": "new-password"})
-    address = TextAreaField('Address :', [InputRequired()], 
-                                render_kw={"class_": "form-control", 
-                                            "autocomplete": "new-password"})
-    email = StringField('Email :', [InputRequired(), Email()], 
-                                render_kw={"class_": "form-control", 
-                                            "autocomplete": "new-password"})
-    phone = IntegerField('Phone Number :', [InputRequired(), length(), 
-                                                check_inp_length()], 
-                                render_kw={"class_": "form-control", 
-                                            "autocomplete": "new-password"})
-    post_addr = StringField('Postal-Address :', [InputRequired()], 
-                                render_kw={"class_": "form-control"})
-    currency = StringField('Currency : ', [InputRequired()], 
-                                render_kw={"class_": "form-control", 
-                                            "autocomplete": "new-password"})
-
-class ItemForm(Form):
-    item_desc = TextAreaField('Description :', [InputRequired()], 
-                                render_kw={"class_": "form-control", 
-                                            "autocomplete": "new-password"})
-    qty = IntegerField('Quantity :', [InputRequired()], 
-                                render_kw={"class_": "form-control", 
-                                            "autocomplete": "new-password"})
-    rate = IntegerField('Rate :', [InputRequired()], 
-                                render_kw={"class_": "form-control", 
-                                            "autocomplete": "new-password"})
-    amt = IntegerField('Amount :', 
-                                render_kw={"class_": "form-control", 
-                                            "readonly": "readonly"})
-
-  
+# +-------------------------+-------------------------+
+# +-------------------------+-------------------------+
 
 
 def template_render(_template, args, kwargs ):
@@ -196,50 +112,69 @@ def login():
         username = request.form['usr_name']
         password = request.form['psd_wrd']
 
-        with db_session() as db:
+        with m.sql_cursor() as db:
+            
+            user = db.query(m.Users
+                           ).filter(
+                                    m.Users.username == username
+                                    ).first()
 
-            param = {'username': username}
-            sql = "select * from users where username=:username"
-            user = db.query(sql, **param).first()
-  
             if user is None:
                 error = 'Incorrect Username/Password'
 
             elif not check_password_hash(user.password, password):
                 error = 'Incorrect Username or Password'
               
-            if error is None:
-                session.clear()
-                session['user_id'] = user['id'] 
+            if error is None:                
+                session['user_id'] = user.id
+
+                login_user(user)
+
                 return redirect(url_for('admin.index'))
 
-            flash(error)
+        flash(error)
 
 
     return render_template('login.html')
     
 
 
-@mod.route('/index')
+@mod.route('/')
+@login_required
 def index():
 
     posts=[]
 
-    with db_session() as db:
+    with m.sql_cursor() as db:
+        qry = db.query(
+                        m.Invoice.inv_id,
+                        m.Invoice.email,
+                        m.Invoice.name,
+                        m.Invoice.address,
+                        m.Invoice.phone, 
+                        m.Invoice.post_addr,
+                        m.Invoice.currency,
+                        m.Invoice.date_value,
+                        m.Invoice.invoice_no
+                      ).order_by(
+                                 m.Invoice.inv_id.desc()
+                                ).all()
 
-        sql = "select * from invoice order by inv_id desc"
-        qry = db.query(sql)
-        posts = qry.as_dict()
+    # with db_session() as db: # db_session() as db:
+    #     # sql = "select * from invoice order by inv_id desc"
+    #     # qry = db.query(sql)
+    #     posts = qry.all()
 
     msg = request.args.get('msg')
     if msg:
         flash(msg)
 
-    return render_template('index.html', value=posts)
+    return render_template('index.html', value=qry)
 
 
 
-@mod.route('/add_item/<int:invoice_id>', methods=['POST', 'GET'])
+@mod.route('/add/item/<int:invoice_id>', methods=['POST', 'GET'])
+@login_required
 def add_item(invoice_id):
 
     form = ItemForm(request.form) 
@@ -270,7 +205,8 @@ def add_item(invoice_id):
     return render_template('add_item.html', form=form)
 
 
-@mod.route('/add_discount/<int:invoice_id>', methods=['POST', 'GET'])
+@mod.route('/add/discount/<int:invoice_id>', methods=['POST', 'GET'])
+@login_required
 def add_discount(invoice_id):
 
     with db_session() as db:
@@ -338,6 +274,7 @@ def add_discount(invoice_id):
 
 
 @mod.route('/checkout/<int:invoice_id>', methods=['POST', 'GET'])
+@login_required
 def checkout(invoice_id):
 
     invoice_details=[]
@@ -354,8 +291,6 @@ def checkout(invoice_id):
         itm_qry = db.query(itm_sql, **param)
         item_for_amount = itm_qry.all()
         items = itm_qry.as_dict()
-
-
 
         data = {
             'invoice_no': invoice_details[0].invoice_no,
@@ -399,54 +334,61 @@ def checkout(invoice_id):
                             items=items)
 
 
-@mod.route('/create_invoice', methods=['POST', 'GET'])
+@mod.route('/create/invoice', methods=['POST', 'GET'])
+@login_required
 def create_invoice():
 
     form = CreateInvoiceForm(request.form)
 
-    if request.method=='POST' and form.validate():
+    if request.method == 'POST' and form.validate():
 
-        name = request.form['name']
-        address = request.form['address']
-        phone = request.form['phone']
-        email = request.form['email']
-        post_addr = request.form['post_addr']
-        currency = request.form['currency'].upper()
+        # name = request.form['name']
+        # address = request.form['address']
+        # phone = request.form['phone']
+        # email = request.form['email']
+        # post_addr = request.form['post_addr']
+        # currency = request.form['currency'].upper()
 
-        with db_session() as db:
+        with m.sql_cursor() as db:
 
             params = {
-                    'name' : name,
-                    'address' : address,
-                    'phone' : phone,
-                    'email' : email,
-                    'post_addr' : post_addr,
-                    'currency' : currency,
-                    'date_value' : arrow.now().format('YYYY-MM-DD'),
-                    'invoice_due' : arrow.now().format('YYYY-MM-DD'),
+                    'name' : form.name.data,
+                    'address' : form.address.data,
+                    'phone' : form.phone.data,
+                    'email' : form.email.data,
+                    'post_addr' : form.post_addr.data,
+                    'currency' : form.currency.data,
+                    'date_value' : datetime.datetime.now(),
+                    'invoice_due' : datetime.datetime.now(),
                 } 
 
-
-            kent = db.query("select * from invoice_sequence").first()
+            invoice = m.Invoice(**params)
+            db.add(invoice)
+            db.flush()
+            invoice.invoice_no = 'INV-%d' %invoice.inv_id 
+            invoice.purchase_no = invoice.inv_id 
+ 
+            return redirect(url_for('admin.add_item',invoice_id=invoice.inv_id))    
+            # kent = db.query("select * from invoice_sequence").first()
             
-            tmp_val = str(kent.last_value + 1)
+            # tmp_val = str(kent.last_value + 1)
 
-            params['invoice_no'] = 'INV-' + tmp_val
-            params['purchase_no'] = tmp_val
+            # params['invoice_no'] = 'INV-' + tmp_val
+            # params['purchase_no'] = tmp_val
             
-            db.query("""INSERT INTO invoice(inv_id, name, address, 
-                                            phone, email, post_addr, 
-                                            currency, date_value, invoice_due, 
-                                            invoice_no, purchase_no)
-                                    VALUES(
-                                            nextval('invoice_sequence'), :name, :address, 
-                                            :phone, :email, :post_addr, :currency, 
-                                            :date_value, :invoice_due, :invoice_no,
-                                            :purchase_no
-                                          )
-                      """, **params)
+            # db.query("""INSERT INTO invoice(inv_id, name, address, 
+            #                                 phone, email, post_addr, 
+            #                                 currency, date_value, invoice_due, 
+            #                                 invoice_no, purchase_no)
+            #                         VALUES(
+            #                                 nextval('invoice_sequence'), :name, :address, 
+            #                                 :phone, :email, :post_addr, :currency, 
+            #                                 :date_value, :invoice_due, :invoice_no,
+            #                                 :purchase_no
+            #                               )
+            #           """, **params)
 
-            return redirect(url_for('admin.add_item',invoice_id=tmp_val))
+            
 
         
 
@@ -455,6 +397,7 @@ def create_invoice():
 
 
 @mod.route('/receipt/<int:invoice_id>', methods=['POST', 'GET'])
+@login_required
 def receipt(invoice_id):
 
     invoice_details=[]
@@ -506,6 +449,7 @@ def receipt(invoice_id):
 
 
 @mod.route('/edit_item/<int:invoice_id>/<int:item_id>', methods=['POST', 'GET'])
+@login_required
 def edit_item(invoice_id, item_id):
 
     with db_session() as db:
@@ -548,8 +492,8 @@ def edit_item(invoice_id, item_id):
     return render_template('edit_item.html', form=form)
 
 
-
 @mod.route('/delete_item/<int:invoice_id>/<int:item_id>')
+@login_required
 def delete_item(invoice_id, item_id):
 
     with db_session() as db:
@@ -561,6 +505,7 @@ def delete_item(invoice_id, item_id):
 
 
 @mod.route('edit_invoice/<int:invoice_id>', methods=['POST', 'GET'])
+@login_required
 def edit_invoice(invoice_id):
 
     with db_session() as db:
@@ -608,6 +553,13 @@ def edit_invoice(invoice_id):
                 
     return render_template('invoice_detail.html', form=form)
 
+
+
+@mod.route("/logout")
+@login_required
+def logout_app():
+    logout_user()
+    return redirect(url_for('admin.login'))
 
 
 

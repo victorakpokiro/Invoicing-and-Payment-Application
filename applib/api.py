@@ -8,7 +8,7 @@ import arrow
 # +-----------------------+---------------------------+
 
 from applib.model import db_session
-from applib.forms import (CustomerForm, ItemsForm, BillsForm)
+from applib.forms import (CustomerForm, ItemForm, BillsForm)
 
 
  

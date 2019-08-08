@@ -1,6 +1,6 @@
 
 CREATE TABLE IF NOT EXISTS item (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	item_desc varchar(150),
 	qty int,
 	rate int,
