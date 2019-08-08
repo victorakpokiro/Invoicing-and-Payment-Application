@@ -2,6 +2,10 @@
 *.log
 *.cfg
 *.pdf
+*.ini
+*.cfg
+*.pyo
+*.pyc
 
 tmp/
 __pycache__/
