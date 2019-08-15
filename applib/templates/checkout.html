@@ -36,7 +36,7 @@
 					<tbody>
 						{% for val in invoice_details %}
 							<tr>
-								<td>{{val.date_value}}</td>
+								<td>{{val.date_value.strftime("%Y-%m-%d")}}</td>
 								<td> <b> {{val.name | title}} </b></td>
 								<td>{{val.address}}</td>
 								<td>{{val.email}}</td>
@@ -136,13 +136,13 @@
 				</div>
 
 				
-				
 				<form action="" method="post">
 					<div>
 						<hr style="margin-top: 65px">
 						<button type="submit" class="btn btn-success fas fa-file-invoice" style="width: 100%; margin-bottom: 7px; margin-top: 45px; height: 40px;"> Email Invoice </button>
 
-						<a href="/admin/index" class="btn" style="float: right; width: 100%; height: 40px; background-color: #eee"> Back </a>
+						{% set link = url_for('admin.index') %}
+						<a href="{{link}}" class="btn" style="float: right; width: 100%; height: 40px; background-color: #eee"> Back </a>
 					</div>
 				</form>
 			</div>
@@ -162,7 +162,7 @@
 		delte.addEventListener("click", ask_delete);
 
 		function ask_delete(){
-			alert("Do you want to Delete ?")
+			alert("Do you want to Delete ?");
 			}
 
 	</script>

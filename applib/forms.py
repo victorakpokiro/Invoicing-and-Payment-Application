@@ -149,9 +149,15 @@ class CreateInvoiceForm(Form):
                                             "autocomplete": "new-password"})
     post_addr = StringField('Postal-Address :', [InputRequired()], 
                                 render_kw={"class_": "form-control"})
-    currency = StringField('Currency : ', [InputRequired()], 
+    currency = SelectField('Currency :', 
+                                choices=[
+                                        ('select', 'Select...'),
+                                        ('ngn', 'NGN'), 
+                                        ('ghc', 'GHC'), 
+                                        ('usd', 'USD'),
+                                        ('eur', 'EUR')], 
                                 render_kw={"class_": "form-control", 
-                                            "autocomplete": "new-password"})
+                                           "style": "margin-bottom : 10px"})
 
 
 

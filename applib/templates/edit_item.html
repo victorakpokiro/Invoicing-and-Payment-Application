@@ -41,7 +41,8 @@
 					</div>
 
 					<div>
-						<button class="btn" onclick="window.location.href='/admin/index'" style="width: 100%; background-color: #eee"> Back </button>
+						{% set link = url_for('admin.index') %}
+						<button class="btn" href="{{link}}" style="width: 100%; background-color: #eee"> Back </button>
 					</div>
 
 				</form>

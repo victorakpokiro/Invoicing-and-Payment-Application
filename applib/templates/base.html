@@ -8,12 +8,15 @@
 
 	<style>
 		.footer{ 
-	       position: fixed;     
-	       text-align: center;    
-	       bottom: 0px; 
-	       width: 100%;
-	       color: green;
-	   }
+		       position: fixed;     
+		       text-align: center;    
+		       bottom: 0px; 
+		       width: 100%;
+		       color: green;
+	   		}
+	   	#logout:hover{
+				background-color: #eee;
+	   		}
 	</style>
 </head>
 <body>
@@ -22,9 +25,9 @@
 
 
 	{% block main %}{% endblock %}
-	<footer class="footer">
+	<!-- <footer class="footer">
 		<i>… we make software work</i>
-	</footer>
+	</footer> -->
 
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

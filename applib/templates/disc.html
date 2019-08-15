@@ -47,7 +47,9 @@
 					<div>
 						<hr style="margin-top: 65px">
 						<button type="submit" class="btn btn-success" style="width: 100%; margin-bottom: 7px; margin-top: 5px"> Apply Discount </button>
-						<a href="/admin/index" class="btn" style="float: right; width: 100%; height: 40px; background-color: #eee"> Back </a>	
+
+						{% set link = url_for('admin.index') %}
+						<a href="{{link}}" class="btn" style="float: right; width: 100%; height: 40px; background-color: #eee"> Back </a>	
 					</div>
 					
 				</form>

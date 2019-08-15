@@ -175,7 +175,7 @@
 							<br><b>Invoice No.</b><br>
 							<p>{{ invoice_no }}</p>
 							<b>Date</b><br>
-							<p>{{ date_value }}</p>
+							<p>{{ date_value.strftime("%Y-%m-%d") }}</p>
 							<b>Invoice Due</b><br>
 							<p>{{ invoice_due }}</p>
 							<b>Purchase Order No.</b><br>
