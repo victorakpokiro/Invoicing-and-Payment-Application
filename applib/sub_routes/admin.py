@@ -304,8 +304,8 @@ def checkout(invoice_id):
 
         data = {
                 'invoice_no': invoice_details.invoice_no,
-                'date_value': datetime.datetime.now().strftime("%x"),
-                'invoice_due': datetime.datetime.now().strftime("%x"),
+                'date_value': datetime.datetime.now().strftime("%Y-%m-%d"),
+                'invoice_due': datetime.datetime.now().strftime("%Y-%m-%d"),
                 'purchase_order_no': invoice_details.purchase_no,
                 'discount_applied': invoice_details.disc_value,
                 'address': invoice_details.address,

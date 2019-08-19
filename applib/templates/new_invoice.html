@@ -120,7 +120,7 @@
 			}
 
 			#footer_div{
-					margin-top: 5%; 
+					margin-top: 25%; 
 					padding-top: 10%;
 			}
 
@@ -142,6 +142,14 @@
 					margin-top: 2px; 
 					font-size: 15px;
 			}
+
+			.footer{ 
+		       position: fixed;     
+		       text-align: left;    
+		       bottom: 0px; 
+		       width: 100%;
+		       /*color: green;*/
+	   		}
 
 	</style>
 
@@ -175,7 +183,7 @@
 							<br><b>Invoice No.</b><br>
 							<p>{{ invoice_no }}</p>
 							<b>Date</b><br>
-							<p>{{ date_value.strftime("%Y-%m-%d") }}</p>
+							<p>{{ date_value }}</p>
 							<b>Invoice Due</b><br>
 							<p>{{ invoice_due }}</p>
 							<b>Purchase Order No.</b><br>
