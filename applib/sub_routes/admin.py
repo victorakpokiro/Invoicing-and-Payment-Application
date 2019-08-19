@@ -6,13 +6,12 @@ import base64
 import arrow
 import datetime
 
-from flask import Blueprint, request, url_for, render_template, redirect, session, flash
-from applib.model import db_session
-
-from applib import model as m 
+from flask import (Blueprint, request, url_for, 
+                   render_template, redirect, session, flash)
 
 from werkzeug.security import check_password_hash, generate_password_hash
-import records
+# import records
+
 
 import email, smtplib, ssl
 from email import encoders
@@ -24,7 +23,11 @@ from jinja2 import Template
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 import random 
 
+
+from applib.model import db_session
+from applib import model as m 
 from applib.forms import (ItemForm, DiscountFrm, CreateInvoiceForm)
+from applib.lib.helper import get_config 
 
 # from applib.main import login_manager
 
@@ -39,7 +42,7 @@ mod = Blueprint('admin', __name__, url_prefix='/admin')
 # +-------------------------+-------------------------+
 
 
-def template_render(_template, args, kwargs ):
+def generate_pdf(_template, args, kwargs ):
 
     env = Environment(loader=FileSystemLoader('applib/templates/'))
     template = env.get_template(_template)
@@ -48,8 +51,7 @@ def template_render(_template, args, kwargs ):
     pdf_output = 'invoice_%d.pdf'%random.randrange(10000)  #when rendering with flask this library requires a co plte directory for the style and image file
     pdfkit.from_string(_template, pdf_output, {'orientation': 'Portrait'})
 
-    send_email(pdf_output, "victorakpokiro@gmail.com", 
-                kwargs['email'], "message subject")
+    send_email(pdf_output, kwargs['email'], "message subject", kwargs['body'])
 
 
 def comma_separation(amt):
@@ -58,49 +60,56 @@ def comma_separation(amt):
     return fmt.format(float(amt))
 
 
-def send_email(filename, sender_email, receiver_email, msg_subject):
+def send_email(filename, receiver_email, msg_subject, email_body):
     
-    body = "thank you for paying up below is your invoice" 
-    port = 465  # For SSL
-    smtp_server = "smtp.gmail.com"
-    password = input("Type your password and press enter: ")
-    
-    message = MIMEMultipart()
-    message["Subject"] = msg_subject
-    message["From"] = sender_email
-    message["To"] = receiver_email
+    email_params = get_config('email')
 
-    message.attach(MIMEText(body, "html"))  #Add body to Email
-    # filename = pdf_output  # In same directory as script
+    if email_params['live'] == '1':
 
-    with open(filename, "rb") as attachment:  # Open PDF file in readable binary mode
-        part = MIMEBase("application", "octet-stream")   # Add file as application/octet-stream
-        part.set_payload(attachment.read())  # Email client can usually download this automatically as attachment
+        body = email_body
+        port = email_params['ssl']
+        smtp_server =  email_params['smtp_server']
+        password = email_params['passwd']
+        
+        message = MIMEMultipart()
+        message["Subject"] = msg_subject
+        message["From"] = email_params['sender']
+        message["To"] = receiver_email
 
-    encoders.encode_base64(part)  # Encode file in ASCII characters to send by email 
+        message.attach(MIMEText(body, "html"))  #Add body to Email
+        # filename = pdf_output  # In same directory as script
 
-    part.add_header(
-        "Content-Disposition",
-        "attachment; filename= Invoice",  # Add name/header to attachment part
-    )
+        with open(filename, "rb") as attachment:  # Open PDF file in readable binary mode
+            part = MIMEBase("application", "octet-stream")   # Add file as application/octet-stream
+            part.set_payload(attachment.read())  # Email client can usually download this automatically as attachment
 
-    
-    message.attach(part)  # Add attachment to message 
-    
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-        server.login(sender_email, password)
-        server.sendmail(
-            sender_email, receiver_email, message.as_string() # convert body and attachment messages to string
-            )
+        encoders.encode_base64(part)  # Encode file in ASCII characters to send by email 
+
+        part.add_header(
+            "Content-Disposition",
+            "attachment; filename=Invoice.{}".format(datetime.datetime.now().strftime("%Y.%m.%d")),  # Add name/header to attachment part
+        )
+        
+        message.attach(part)  # Add attachment to message 
+        
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+            server.login(sender_email, password)
+            server.sendmail(
+                sender_email, receiver_email, message.as_string() # convert body and attachment messages to string
+                )
 
 
 def calc_discount(query_disc_type, query_disc_value, query_sub_total):
+    
     if query_disc_type == 'fixed':
         return query_disc_value
     elif query_disc_type == 'percent':
-        applied = int(query_disc_value)/100.0 * int(query_sub_total)
-        return applied
+        return int(query_disc_value)/100.0 * int(query_sub_total)
+        # return applied
+
+    return 0
+
 
 
 @mod.route('/login', methods = ['GET','POST'])
@@ -114,10 +123,8 @@ def login():
 
         with m.sql_cursor() as db:
             
-            user = db.query(m.Users
-                           ).filter(
-                                    m.Users.username == username
-                                    ).first()
+            user = db.query(m.Users).filter(m.Users.username == username
+                                            ).first()
 
             if user is None:
                 error = 'Incorrect Username/Password'
@@ -147,20 +154,22 @@ def index():
 
     with m.sql_cursor() as db:
         #select query from invoice
-        qry = db.query(
-                        m.Invoice.inv_id,
-                        m.Invoice.email,
-                        m.Invoice.name,
-                        m.Invoice.address,
-                        m.Invoice.phone, 
-                        m.Invoice.post_addr,
-                        m.Invoice.currency,
-                        m.Invoice.date_value,
-                        m.Invoice.invoice_no
-                      ).order_by(
-                                 m.Invoice.inv_id.desc()
-                                ).all()
+        sub = db.query(m.Items.invoice_id, m.func.sum(m.func.cast(
+                                                                    m.Items.amount, m.ptype.INTEGER
+                                                                  )
+                                                      ).label("sub_total"),
+                       ).group_by(
+                            m.Items.invoice_id
+                       ).subquery()
 
+        qry = db.query(m.Invoice.inv_id, m.Invoice.invoice_no, m.Invoice.email, 
+                       m.Invoice.name, m.Invoice.date_value,                      
+                       sub.c.sub_total,
+                       sub.c.invoice_id,
+                      ).outerjoin(sub, sub.c.invoice_id == m.Invoice.inv_id
+                                 ).all()
+                                 
+       
     msg = request.args.get('msg')
     if msg:
         flash(msg)
@@ -271,11 +280,7 @@ def add_discount(invoice_id):
                 output.update({
                             'disc_type' : form.discount_type.data,
                             'disc_value' : form.discount.data,                      
-                        }) 
-
-         
-           
-
+                        })   
                 return redirect(url_for('admin.index'))        
 
         return render_template('disc.html', form=form)
@@ -288,56 +293,28 @@ def checkout(invoice_id):
     invoice_details=[]
 
     with m.sql_cursor() as db:
-        invoice_details = db.query(
-                            m.Invoice.inv_id,
-                            m.Invoice.email,
-                            m.Invoice.name,
-                            m.Invoice.phone,
-                            m.Invoice.address,
-                            m.Invoice.post_addr,
-                            m.Invoice.date_value,
-                            m.Invoice.invoice_no,
-                            m.Invoice.purchase_no,
-                            m.Invoice.disc_value,
-                            m.Invoice.disc_type,
-                            m.Invoice.invoice_no,
-                            m.Invoice.currency
-                      ).filter_by(
-                                 inv_id=invoice_id
-                                ).all()
-
-        param = {'id': invoice_id}
-        items = []
-        item_for_amount = db.query(
-                            m.Items.id,
-                            m.Items.item_desc,
-                            m.Items.qty,
-                            m.Items.rate,
-                            m.Items.amount,
-                        ).filter_by(**param).all()
-
-        for y in item_for_amount:
-            items.append({
-                            'id': y.id,
-                            'item_desc': y.item_desc,
-                            'qty': y.qty,
-                            'rate': y.rate,
-                            'amount': y.amount
-                        })
+        invoice_details = db.query(m.Invoice
+                                   ).filter_by(inv_id=invoice_id
+                                              ).first()
+ 
+        item_for_amount = db.query(m.Items.id, m.Items.item_desc,
+                                   m.Items.qty, m.Items.rate,
+                                   m.Items.amount
+                                  ).filter_by(**{'invoice_id': invoice_id}).all()
 
         data = {
-                'invoice_no': invoice_details[0].invoice_no,
+                'invoice_no': invoice_details.invoice_no,
                 'date_value': datetime.datetime.now().strftime("%x"),
                 'invoice_due': datetime.datetime.now().strftime("%x"),
-                'purchase_order_no': invoice_details[0].purchase_no,
-                'discount_applied': invoice_details[0].disc_value,
-                'address': invoice_details[0].address,
-                'post_addr': invoice_details[0].post_addr,
-                'name': invoice_details[0].name,
-                'disc_type': invoice_details[0].disc_type,
-                'email': invoice_details[0].email,
-                'phone': invoice_details[0].phone,
-                'currency': invoice_details[0].currency
+                'purchase_order_no': invoice_details.purchase_no,
+                'discount_applied': invoice_details.disc_value,
+                'address': invoice_details.address,
+                'post_addr': invoice_details.post_addr,
+                'name': invoice_details.name,
+                'disc_type': invoice_details.disc_type,
+                'email': invoice_details.email,
+                'phone': invoice_details.phone,
+                'currency': invoice_details.currency
                 }
 
         data['cur_fmt'] = comma_separation
@@ -348,26 +325,43 @@ def checkout(invoice_id):
         for x in item_for_amount:
             _amount += float(x.amount)
 
-        data['discount'] = 0
-        if invoice_details[0].disc_type == 'fixed':
-            data['discount'] = invoice_details[0].disc_value
-        elif invoice_details[0].disc_type == 'percent':
-            applied = int(invoice_details[0].disc_value)/100.0 * int(_amount)
-            data['discount'] = applied
+        data['discount'] = calc_discount(invoice_details.disc_type, 
+                                         invoice_details.disc_value, _amount)
         
-           
+        # data['discount'] = 0
+        # if invoice_details.disc_type == 'fixed':
+        #     data['discount'] = invoice_details[0].disc_value
+        # elif invoice_details.disc_type == 'percent':
+        #     applied = int(invoice_details.disc_value)/100.0 * int(_amount)
+        #     data['discount'] = applied
+        
 
         total = _amount - float(data['discount'])
         data['total'] = total
 
         if request.method == 'POST':
-            template_render(_template='new_invoice.html', args=items, kwargs=data)
 
+            items = []
+            for y in item_for_amount:
+                items.append({
+                                'id': y.id, 'item_desc': y.item_desc,
+                                'qty': y.qty, 'rate': y.rate, 'amount': y.amount
+                              })
 
-    return render_template('checkout.html', 
-                            invoice_details=invoice_details, 
-                            kwargs=data,
-                            items=items)
+            # this needs to be replaced to an email template 
+            data['body'] = "Please see the invoice attached in mail."
+            generate_pdf(_template='new_invoice.html', args=items, kwargs=data)
+            
+            msg = "Invoice has been emailed to the customer successfully."
+            return redirect(url_for('admin.index', msg=msg))
+
+    
+    # render the page on get 
+
+        return render_template('checkout.html', 
+                                invoice_details=invoice_details, 
+                                kwargs=data,
+                                items=item_for_amount)
 
 
 @mod.route('/create/invoice', methods=['POST', 'GET'])
@@ -381,12 +375,9 @@ def create_invoice():
         with m.sql_cursor() as db:
 
             params = {
-                    'name' : form.name.data,
-                    'address' : form.address.data,
-                    'phone' : form.phone.data,
-                    'email' : form.email.data,
-                    'post_addr' : form.post_addr.data,
-                    'currency' : form.currency.data.upper(),
+                    'name' : form.name.data, 'address' : form.address.data,
+                    'phone' : form.phone.data, 'email' : form.email.data,
+                    'post_addr' : form.post_addr.data, 'currency' : form.currency.data.upper(),
                     'date_value' : datetime.datetime.now(),
                     'invoice_due' : datetime.datetime.now()
                 } 
@@ -407,38 +398,24 @@ def create_invoice():
 @login_required
 def receipt(invoice_id):
 
-    invoice_details=[]
+    invoice_details = []
 
     with m.sql_cursor() as db:
 
         # select query with WHERE request
-        invoice_details = db.query(
-                    m.Invoice.inv_id,
-                    m.Invoice.email,
-                    m.Invoice.name,
-                    m.Invoice.address,
-                    m.Invoice.post_addr,
-                    m.Invoice.date_value,
-                    m.Invoice.invoice_no,
-                    m.Invoice.purchase_no,
-                    m.Invoice.disc_value,
-                    m.Invoice.disc_type,
-                    m.Invoice.invoice_no,
-                    m.Invoice.currency
-              ).filter_by(
-                         inv_id=invoice_id
-                        ).all()
+        invoice_details = db.query(m.Invoice).filter_by(inv_id=invoice_id
+                                                       ).first()
 
-        param = {'id': invoice_id}
+        param = {'invoice_id': invoice_id}
 
         # select query with WHERE request
         item_for_amount = db.query(
-                    m.Items.id,
-                    m.Items.item_desc,
-                    m.Items.qty,
-                    m.Items.rate,
-                    m.Items.amount,
-                ).filter_by(**param).all()
+                            m.Items.id,
+                            m.Items.item_desc,
+                            m.Items.qty,
+                            m.Items.rate,
+                            m.Items.amount
+                        ).filter_by(**param).all()
        
         for y in item_for_amount:
             items.append({
@@ -450,17 +427,17 @@ def receipt(invoice_id):
                         })
         
         data = {
-            'invoice_no': invoice_details[0].invoice_no,
+            'invoice_no': invoice_details.invoice_no,
             'date_value': datetime.datetime.now().strftime("%x"),
             'invoice_due': datetime.datetime.now().strftime("%x"),
-            'purchase_order_no': invoice_details[0].purchase_no,
-            'paid_to_date': invoice_details[0].paid_to_date,
-            'balance': invoice_details[0].balance,
-            'address': invoice_details[0].address,
-            'post_addr': invoice_details[0].post_addr,
-            'name': invoice_details[0].name,
-            'disc_type': invoice_details[0].disc_type,
-            'email': invoice_details[0].email
+            'purchase_order_no': invoice_details.purchase_no,
+            'paid_to_date': invoice_details.paid_to_date,
+            'balance': invoice_details.balance,
+            'address': invoice_details.address,
+            'post_addr': invoice_details.post_addr,
+            'name': invoice_details.name,
+            'disc_type': invoice_details.disc_type,
+            'email': invoice_details.email
         }
 
         data['cur_fmt'] = comma_separation
@@ -468,14 +445,22 @@ def receipt(invoice_id):
         for x in item_for_amount:
             _amount += float(x.amount)
 
-        if invoice_details[0].disc_type == 'fixed':
-            data['discount'] = invoice_details[0].disc_value
-        elif invoice_details[0].disc_type == 'percent':
-            applied = int(invoice_details[0].disc_value)/100.0 * int(_amount)
-            data['discount'] = applied
+        
+
+        data['discount'] = get_discount(invoice_details.disc_type,
+                            invoice_details.disc_value, _amount
+                            )
+
+        # if invoice_details.disc_type == 'fixed':
+        #     data['discount'] = invoice_details.disc_value
+        # elif invoice_details.disc_type == 'percent':
+        #     applied = int(invoice_details.disc_value)/100.0 * int(_amount)
+        #     data['discount'] = applied
 
         if request.method == 'GET':
-            return template_render(_template='new_invoice.html', args=items, kwargs=data)
+            return generate_pdf(_template='new_invoice.html', 
+                                args=items, kwargs=data)
+
 
 
 @mod.route('/edit_item/<int:invoice_id>/<int:item_id>', methods=['POST', 'GET'])

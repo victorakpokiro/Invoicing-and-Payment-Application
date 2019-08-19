@@ -16,8 +16,8 @@
 
 			<div class="col-md-12">
 				<br><br>
-				<p><b>Invoice: {{invoice_details[0].inv_id}}	
-				<a href="{{url_for('admin.receipt', invoice_id=invoice_details[0].inv_id)}}" class="fas fa-receipt" style="float: right; background-color: #eee"> 
+				<p><b>Invoice: {{invoice_details.inv_id}}	
+				<a href="{{url_for('admin.receipt', invoice_id=invoice_details.inv_id)}}" class="fas fa-receipt" style="float: right; background-color: #eee"> 
 				Convert to Receipt 
 				</a>
 				</b></p>
@@ -34,14 +34,14 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for val in invoice_details %}
+						{% if invoice_details %}
 							<tr>
-								<td>{{val.date_value.strftime("%Y-%m-%d")}}</td>
-								<td> <b> {{val.name | title}} </b></td>
-								<td>{{val.address}}</td>
-								<td>{{val.email}}</td>
-								<td>{{val.phone}}</td>
-								<td class="move_right"><a href="{{url_for('admin.edit_invoice', invoice_id=val.inv_id)}}" title="Edit Invoice" class="fas fa-edit" style="color: green"></a>
+								<td>{{invoice_details.date_value.strftime("%Y-%m-%d")}}</td>
+								<td> <b> {{invoice_details.name | title}} </b></td>
+								<td>{{invoice_details.address}}</td>
+								<td>{{invoice_details.email}}</td>
+								<td>{{invoice_details.phone}}</td>
+								<td class="move_right"><a href="{{url_for('admin.edit_invoice', invoice_id=invoice_details.inv_id)}}" title="Edit Invoice" class="fas fa-edit" style="color: green"></a>
 								</td>
 							</tr>
 						{% else %}
@@ -49,14 +49,14 @@
 								<td colspan="5"> <i> no records found... </i> </td>
 							</tr>
 
-						{% endfor %}
+						{% endif %}
 					</tbody>
 				</table>
 
 				<br><br>
 
 				<p style="margin-bottom: 3px;">
-					<span style="font-size: 1.75rem;">Item Details</span> <a href="{{url_for('admin.add_item', invoice_id=invoice_details[0].inv_id)}}" style="float: right; margin-top: 15px; color: green"> Add Item </a>
+					<span style="font-size: 1.75rem;">Item Details</span> <a href="{{url_for('admin.add_item', invoice_id=invoice_details.inv_id)}}" style="float: right; margin-top: 15px; color: green"> Add Item </a>
 				</p>		
 				<table class="table table-striped table-condensed table-hover">
 					<thead>
@@ -76,9 +76,9 @@
 								<td class="move_right w-15">{{item.rate}}</td>
 								<td class="move_right w-20">{{ kwargs['cur_fmt'](item.amount) }}</td>
 								<td class="move_right w-2">
-									<a href="{{url_for('admin.edit_item', item_id=item.id, invoice_id=invoice_details[0].inv_id)}}" title="Edit Item" class="fas fa-edit" style="color: green"></a>
+									<a href="{{url_for('admin.edit_item', item_id=item.id, invoice_id=invoice_details.inv_id)}}" title="Edit Item" class="fas fa-edit" style="color: green"></a>
 
-									<a href="{{url_for('admin.delete_item', item_id=item.id, invoice_id=invoice_details[0].inv_id)}}" title="Delete Item" class="fas fa-trash-alt" style="color: green" id="delete"></a>
+									<a href="{{url_for('admin.delete_item', item_id=item.id, invoice_id=invoice_details.inv_id)}}" title="Delete Item" class="fas fa-trash-alt" style="color: green" id="delete"></a>
 								</td>
 							</tr>
 						{% else %}
@@ -102,7 +102,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{% set query_obj = invoice_details[0] %}
+								{% set query_obj = invoice_details %}
 								{% set dis_symbol = {'percent': '%', 'fixed': 'F'} %}
 								{% if query_obj.disc_value %}
 									<tr>
@@ -129,7 +129,7 @@
 					<div class="col-md-6">
 						 
 						<h3 style="    text-align: center;margin-top: 15%;font-weight: bold;">
-							Total : {{ kwargs['cur_fmt'](kwargs['total']) }} {{ invoice_details[0].currency }} 
+							Total : {{ kwargs['cur_fmt'](kwargs['total']) }} {{ invoice_details.currency }} 
 						</h3>
 					</div>
 

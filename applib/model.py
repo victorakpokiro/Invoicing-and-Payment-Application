@@ -4,7 +4,9 @@ import records
 from contextlib import contextmanager
 from sqlalchemy import (create_engine, Integer, String,
                         Text, DateTime, BigInteger, Date, 
-                        Column, ForeignKey, or_, Sequence)
+                        Column, ForeignKey, or_, Sequence, func)
+
+import sqlalchemy.dialects.postgresql as ptype
  
 from sqlalchemy.ext.declarative import declarative_base  
 from sqlalchemy.orm import sessionmaker
