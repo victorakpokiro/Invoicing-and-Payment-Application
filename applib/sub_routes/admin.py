@@ -114,7 +114,7 @@ def calc_discount(query_disc_type, query_disc_value, query_sub_total):
 
 @mod.route('/login', methods = ['GET','POST'])
 def login():
-
+    
     error = None
 
     if request.method == 'POST':
@@ -290,8 +290,6 @@ def add_discount(invoice_id):
 @login_required
 def checkout(invoice_id):
 
-    invoice_details=[]
-
     with m.sql_cursor() as db:
         invoice_details = db.query(m.Invoice
                                    ).filter_by(inv_id=invoice_id
@@ -391,14 +389,12 @@ def create_invoice():
             return redirect(url_for('admin.add_item',invoice_id=invoice.inv_id))    
 
 
-    return render_template('invoice_detail.html', form=form)
+    return render_template('create_invoice.html', form=form)
 
 
 @mod.route('/receipt/<int:invoice_id>', methods=['POST', 'GET'])
 @login_required
 def receipt(invoice_id):
-
-    invoice_details = []
 
     with m.sql_cursor() as db:
 
@@ -418,12 +414,10 @@ def receipt(invoice_id):
                         ).filter_by(**param).all()
        
         for y in item_for_amount:
+            items = []
             items.append({
-                            'id': y.id,
-                            'item_desc': y.item_desc,
-                            'qty': y.qty,
-                            'rate': y.rate,
-                            'amount': y.amount
+                            'id': y.id, 'item_desc': y.item_desc,
+                            'qty': y.qty, 'rate': y.rate, 'amount': y.amount
                         })
         
         data = {
@@ -463,7 +457,7 @@ def receipt(invoice_id):
 
 
 
-@mod.route('/edit_item/<int:invoice_id>/<int:item_id>', methods=['POST', 'GET'])
+@mod.route('/edit/item/<int:invoice_id>/<int:item_id>', methods=['POST', 'GET'])
 @login_required
 def edit_item(invoice_id, item_id):
 
@@ -507,7 +501,7 @@ def edit_item(invoice_id, item_id):
     return render_template('edit_item.html', form=form)
 
 
-@mod.route('/delete_item/<int:invoice_id>/<int:item_id>')
+@mod.route('/delete/item/<int:invoice_id>/<int:item_id>')
 @login_required
 def delete_item(invoice_id, item_id):
 
@@ -522,8 +516,8 @@ def delete_item(invoice_id, item_id):
 
         return redirect(url_for('admin.checkout', invoice_id=invoice_id)) 
 
-
-@mod.route('edit_invoice/<int:invoice_id>', methods=['POST', 'GET'])
+# assert
+@mod.route('/edit/invoice/<int:invoice_id>', methods=['POST', 'GET'])
 @login_required
 def edit_invoice(invoice_id):
 
@@ -578,7 +572,7 @@ def edit_invoice(invoice_id):
 
                 return redirect(url_for('admin.checkout', invoice_id=invoice_id)) 
                 
-    return render_template('invoice_detail.html', form=form)
+    return render_template('create_invoice.html', form=form)
 
 
 @mod.route("/logout")

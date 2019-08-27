@@ -64,11 +64,18 @@ def check_inp_length():
         try: 
             float(field.data)
         except Exception as e:
-            raise ValidationError('Valid Amount or Input Required.')
+            raise ValidationError('valid input required.')
 
     return validate_amount
 
 
+def check_sign():
+
+    def negative(form, field):
+        if float(field.data) < 1:
+            raise ValidationError("valid input required.")
+
+    return negative
 
 class CustomerForm(Form):
     name = StringField('name', [input_required()])
@@ -96,10 +103,10 @@ class ItemForm(Form):
     item_desc = TextAreaField('Description :', [InputRequired()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
-    qty = IntegerField('Quantity :', [InputRequired()], 
+    qty = IntegerField('Quantity :', [InputRequired(), check_sign()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
-    rate = IntegerField('Rate :', [InputRequired()], 
+    rate = IntegerField('Rate :', [InputRequired(), check_sign()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
     amt = IntegerField('Amount :', 
@@ -143,7 +150,7 @@ class CreateInvoiceForm(Form):
     email = StringField('Email :', [InputRequired(), Email()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
-    phone = IntegerField('Phone Number :', [InputRequired(), length(), 
+    phone = StringField('Phone Number :', [InputRequired(), length(), 
                                                 check_inp_length()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
