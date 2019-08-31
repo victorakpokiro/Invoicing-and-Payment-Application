@@ -111,8 +111,7 @@ def calc_discount(query_disc_type, query_disc_value, query_sub_total):
     return 0
 
 
-
-@mod.route('/login', methods = ['GET','POST'])
+@mod.route('/login', methods=['POST', 'GET'])
 def login():
     
     error = None
@@ -139,12 +138,11 @@ def login():
 
                 return redirect(url_for('admin.index'))
 
-        flash(error)
+            flash(error)
 
 
     return render_template('login.html')
     
-
 
 @mod.route('/')
 @login_required
@@ -177,21 +175,26 @@ def index():
     return render_template('index.html', value=qry)
 
 
-
 @mod.route('/add/item/<int:invoice_id>', methods=['POST', 'GET'])
 @login_required
 def add_item(invoice_id):
 
-    form = ItemForm(request.form) 
+    with m.sql_cursor() as db:
+        client_params = db.query(
+                                    m.Client_invoice.name,
+                                    m.Client_invoice.client_type
+                                ).filter_by(invoice_id=invoice_id).first()
+
+    form = ItemForm(client_name=client_params.name, client_type=client_params.client_type) 
 
     if request.method == 'POST' and form.validate():
 
         params={
-            'item_desc': request.form['item_desc'],
-            'qty': request.form['qty'],
-            'rate': request.form['rate'],
-            'amount': request.form['amt']
-        }
+                    'item_desc': request.form['item_desc'],
+                    'qty': request.form['qty'],
+                    'rate': request.form['rate'],
+                    'amount': request.form['amt']
+                }
 
         with m.sql_cursor() as db:
 
@@ -244,7 +247,7 @@ def add_discount(invoice_id):
                             m.Invoice.disc_value,
                             m.Invoice.disc_type,
                             m.Invoice.invoice_no
-                      ).filter_by(
+                        ).filter_by(
                                  inv_id=invoice_id
                                 )
 
@@ -325,14 +328,6 @@ def checkout(invoice_id):
 
         data['discount'] = calc_discount(invoice_details.disc_type, 
                                          invoice_details.disc_value, _amount)
-        
-        # data['discount'] = 0
-        # if invoice_details.disc_type == 'fixed':
-        #     data['discount'] = invoice_details[0].disc_value
-        # elif invoice_details.disc_type == 'percent':
-        #     applied = int(invoice_details.disc_value)/100.0 * int(_amount)
-        #     data['discount'] = applied
-        
 
         total = _amount - float(data['discount'])
         data['total'] = total
@@ -362,9 +357,42 @@ def checkout(invoice_id):
                                 items=item_for_amount)
 
 
-@mod.route('/create/invoice', methods=['POST', 'GET'])
+@mod.route('/client/invoice', methods=['POST', 'GET'])
 @login_required
-def create_invoice():
+def client_invoice():
+
+
+    with m.sql_cursor() as db:
+
+        client_details = db.query(m.Invoice.name).all()
+
+        if request.method == 'POST':
+
+            params = {
+                        'name'        : request.form['client_name'],
+                        'client_type' : request.form['client_class'],
+                        'description' : request.form['description'],
+                    }
+
+            client_invoice_id = db.query(m.Invoice.inv_id
+                                                    ).filter_by(name=params['name']
+                                                                ).first()
+
+            params['invoice_id'] = client_invoice_id
+
+            client_invoice = m.Client_invoice(**params)
+            db.add(client_invoice)
+            db.flush()
+
+            return redirect(url_for('admin.add_item', invoice_id = client_invoice_id[0]))
+
+
+    return render_template('client_invoice.html', client_details=client_details)
+
+
+@mod.route('/create/client', methods=['POST', 'GET'])
+@login_required
+def create_client():
 
     form = CreateInvoiceForm(request.form)
 
@@ -386,10 +414,10 @@ def create_invoice():
             invoice.invoice_no = 'INV-%d' %invoice.inv_id 
             invoice.purchase_no = invoice.inv_id 
  
-            return redirect(url_for('admin.add_item',invoice_id=invoice.inv_id))    
+            return redirect(url_for('admin.client_invoice'))    
 
 
-    return render_template('create_invoice.html', form=form)
+    return render_template('create_client.html', form=form)
 
 
 @mod.route('/receipt/<int:invoice_id>', methods=['POST', 'GET'])
@@ -456,7 +484,6 @@ def receipt(invoice_id):
                                 args=items, kwargs=data)
 
 
-
 @mod.route('/edit/item/<int:invoice_id>/<int:item_id>', methods=['POST', 'GET'])
 @login_required
 def edit_item(invoice_id, item_id):
@@ -486,7 +513,6 @@ def edit_item(invoice_id, item_id):
 
             if form.validate():
          
-
                 resp.update(
                     {
                         'item_desc' : form.item_desc.data,
@@ -516,7 +542,7 @@ def delete_item(invoice_id, item_id):
 
         return redirect(url_for('admin.checkout', invoice_id=invoice_id)) 
 
-# assert
+
 @mod.route('/edit/invoice/<int:invoice_id>', methods=['POST', 'GET'])
 @login_required
 def edit_invoice(invoice_id):
@@ -572,7 +598,7 @@ def edit_invoice(invoice_id):
 
                 return redirect(url_for('admin.checkout', invoice_id=invoice_id)) 
                 
-    return render_template('create_invoice.html', form=form)
+    return render_template('create_client.html', form=form)
 
 
 @mod.route("/logout")
@@ -580,6 +606,8 @@ def edit_invoice(invoice_id):
 def logout_app():
     logout_user()
     return redirect(url_for('admin.login'))
+
+
 
 
 

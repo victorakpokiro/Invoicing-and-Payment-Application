@@ -101,6 +101,7 @@ class Invoice(db.Model):
     invoice_due = Column(DateTime()) 
     currency  = Column(String(3), nullable=False)
     item = db.relationship('Items', backref='invoice', lazy=True)
+    client_invoice = db.relationship('Client_invoice', backref='invoice', lazy=True)
 
 class Items(db.Model):
 
@@ -126,9 +127,17 @@ class Email_queue(db.Model):
     status= Column(Integer)
 
 
-class ClassName(object):
+class Client_invoice(db.Model):
     
-    __tablename__ = "currency"
+    __tablename__ = "client_invoice"
+
+    id = Column(BigInteger, Sequence('client_invoice_id_seq'), primary_key=True)
+    name = Column(String(150), nullable=False)
+    client_type = Column(String(150), nullable=False)
+    description = Column(String(350), nullable=True)
+    invoice_id = db.Column(db.BigInteger, db.ForeignKey('invoice.inv_id'),
+                            nullable=False)
+
         
 
 

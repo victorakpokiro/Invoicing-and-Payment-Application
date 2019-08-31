@@ -21,7 +21,7 @@ def main():
 
     if cmd.drop_tl:
         db.drop_all()
-        print("all tables droped from the database")
+        print("all tables dropped from the database")
         return 
 
     # main app starts here 

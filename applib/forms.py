@@ -100,15 +100,26 @@ class CustomerForm(Form):
 
 
 class ItemForm(Form):
+    client_name = StringField('Client Name :', 
+                                render_kw={"class_": "form-control", 
+                                            "readonly": "readonly"})
+
+    client_type = StringField('Client Type :', 
+                                render_kw={"class_": "form-control", 
+                                            "readonly": "readonly"})
+
     item_desc = TextAreaField('Description :', [InputRequired()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
+
     qty = IntegerField('Quantity :', [InputRequired(), check_sign()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
+
     rate = IntegerField('Rate :', [InputRequired(), check_sign()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
+    
     amt = IntegerField('Amount :', 
                                 render_kw={"class_": "form-control", 
                                             "readonly": "readonly"})
