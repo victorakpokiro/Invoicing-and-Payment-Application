@@ -52,15 +52,22 @@
 
 	<div id="mySidenav" class="sidenav">
 
-		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()" onmouseover="this.style.backgroundColor='transparent';">&times;</a>
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()" 	   onmouseover="this.style.backgroundColor='transparent';">
+			&times;
+		</a>
 
-		<a href="{{url_for('admin.create_client')}}" class="btn"><i class="fas fa-file-invoice fa-lg"></i>&nbsp; Create Invoice</a>
+		<a href="{{url_for('admin.create_client')}}" class="btn">
+			<i class="fas fa-user fa-lg"></i>
+			&nbsp; Create Client
+		</a>
 
-		<a href="{{url_for('admin.client_invoice')}}" class="btn">
-					<i class="fas fa-user fa-lg"></i>&nbsp; Add Client</a>
+		<a href="{{url_for('admin.client_invoice')}}" class="btn" style="margin-left: -11px;"><i class="fas fa-file-invoice fa-lg"></i>
+			&nbsp; Add Invoice
+		</a>
 
-		<a href="{{url_for('admin.logout_app')}}" class="btn" id="logout"><i class="
-					fas fa-power-off"></i>&nbsp; Logout</a>
+		<a href="{{url_for('admin.logout_app')}}" class="btn" id="logout" 	  style="margin-left: -42px;"><i class="fas fa-power-off"></i>
+			&nbsp; Logout
+		</a>
 
 	</div>
 
@@ -100,20 +107,24 @@
 								{% for val in value %}
 									<tr>
 
-										<td> {{ val.date_value.strftime("%Y-%m-%d 				%H:%M")}} </td>
+										<td> {{ val.date_value.strftime(
+												"%Y-%m-%d %H:%M"
+												)}} </td>
 										<td> 
-											<a href="{{url_for('admin.checkout', 			invoice_id=val.inv_id)}}" title="View 		Invoice Details" style="color: green">  	<b>{{ val.invoice_no }}</b> 
+											<a href="{{url_for('admin.checkout', 			invoice_id=val.inv_id)}}" 
+											title="View Invoice Details" 
+											style="color: green"><b>{{ val.invoice_no }}</b> 
 											</a> 
 										</td>
 										<td> {{ val.name | title }} </td>
 										<td> {{ val.email }} </td>
 										<td> {{ val.sub_total or '0.00' }} </td>
 										<td> 
-											<a href="{{url_for('admin.add_item', 				invoice_id=val.inv_id )}}" title="			Add Invoice Item"> 
+											<a href="{{url_for('admin.add_item', 				invoice_id=val.inv_id )}}" 			title="Add Invoice Item"> 
 													<i class="fas fa-plus-square fa-lg" style="color: green"></i>
 										  	</a>									
 											&nbsp;
-											<a href="{{url_for('admin.add_discount', 			invoice_id=val.inv_id)}}" title="			Apply Discount To Invoice"> <i class		="fas fa-calculator fa-lg" style="		color: green"></i></a> 
+											<a href="{{url_for('admin.add_discount', 			invoice_id=val.inv_id)}}" 			title="Apply Discount To Invoice"><i class="fas fa-calculator fa-lg" style="		color: green"></i></a> 
 											&nbsp;							 
 										</td>
 									</tr>

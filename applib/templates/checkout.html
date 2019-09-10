@@ -38,15 +38,15 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% if invoice_details %}
+						{% if invoice_details or client_details %}
 							<tr>
 								<td>{{invoice_details.date_value.strftime("%Y-%m-%d")}}</td>
-								<td> <b> {{invoice_details.name | title}} </b></td>
-								<td>{{invoice_details.address}}</td>
-								<td>{{invoice_details.email}}</td>
-								<td>{{invoice_details.phone}}</td>
+								<td> <b> {{client_details.name | title}} </b></td>
+								<td>{{client_details.address}}</td>
+								<td>{{client_details.email}}</td>
+								<td>{{client_details.phone}}</td>
 								<td class="move_right"><a 
-									href="{{url_for('admin.edit_invoice', 						invoice_id=invoice_details.inv_id)}}" 
+									href="{{url_for('admin.edit_client', 						invoice_id=invoice_details.inv_id)}}" 
 									title="Edit Invoice" 
 									class="fas fa-edit" 
 									style="color: green"></a>
@@ -91,10 +91,10 @@
 										class="fas fa-edit" 
 										style="color: green"></a>
 
-									<a 	href="{{url_for('admin.delete_item', 						item_id=item.id, 									invoice_id=invoice_details.inv_id)}}" 
+									<a 	href="{{url_for('admin.delete_item', 						item_id=item.id, invoice_id=invoice_details.inv_id)}}" 
 										title="Delete Item" 
 										class="fas fa-trash-alt" 
-										style="color: green" id="delete"></a>
+										style="color: green" id="delete_item"></a>
 								</td>
 							</tr>
 						{% else %}
@@ -109,7 +109,11 @@
 				
 				<div class="row">
 					<div class="col-md-6">
-						<h3>Discount Applied</h3>
+						<p style="margin-bottom: 3px;">
+							<span style="font-size: 1.75rem;">Discount Applied</span> 
+							<a id="delete_discount" href="{{url_for('admin.delete_discount',	invoice_id=invoice_details.inv_id)}}" 
+							style="float: right; margin-top: 15px; color: blue;"> Delete Discount </a>
+						</p>
 						<table class="table table-striped table-condensed table-hover">
 							<thead>
 								<tr> 
@@ -181,14 +185,21 @@
 	
 	<script type="text/javascript">
 
-		var delte = document.getElementById("delete");
+		var deltItm = document.getElementById("delete_item");
+		var deltDisc = document.getElementById("delete_discount");
 
-		delte.addEventListener("click", ask_delete);
+		deltItm.addEventListener("click", ask_delete.bind(this));
+		deltDisc.addEventListener("click", ask_delete.bind(this));
 
-		function ask_delete(){
-			alert("Do you want to Delete ?");
-			}
+		function ask_delete(e){
+			e.preventDefault();
 
+			if (confirm("Do you want to Delete ?")) {
+				window.location = e.currentTarget.href;
+				return true;
+			} 
+			return false;	
+		}
 	</script>
 
 {% endblock %}

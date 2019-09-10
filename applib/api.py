@@ -45,7 +45,6 @@ class InvoiceApi(Resource):
                     
 
             # if the code get here all is well
-            
             sub_total_amount = 0
             for item in items:
                 sub_total_amount += float(item['amount'])
@@ -160,7 +159,3 @@ class InvoiceApi(Resource):
             # db.flush()
 
 
-
- 
-
-       

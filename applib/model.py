@@ -88,20 +88,18 @@ class Invoice(db.Model):
     __tablename__ = "invoice"
 
     inv_id = Column(BigInteger, Sequence('invoice_inv_id_seq'), primary_key=True)    
-    name = Column(String(150), nullable=False)
-    address = Column(Text, nullable=False)    
-    email = Column(String(150), nullable=False) 
-    phone = Column(String(20), nullable=False)        
-    post_addr = Column(String(20), nullable=False)    
     disc_type = Column(String(10))    
     disc_value = Column(String(10))   
     purchase_no = Column(Integer)  
     invoice_no = Column(String(30))   
     date_value = Column(DateTime())  
-    invoice_due = Column(DateTime()) 
-    currency  = Column(String(3), nullable=False)
+    invoice_due = Column(DateTime())
+    client_type = Column(String(150), nullable=False)
+    description = Column(String(350), nullable=True) 
+    currency  = Column(String(3), nullable=False) 
+    client_id =  db.Column(db.BigInteger, db.ForeignKey('client.id'), nullable=False)
     item = db.relationship('Items', backref='invoice', lazy=True)
-    client_invoice = db.relationship('Client_invoice', backref='invoice', lazy=True)
+
 
 class Items(db.Model):
 
@@ -127,16 +125,18 @@ class Email_queue(db.Model):
     status= Column(Integer)
 
 
-class Client_invoice(db.Model):
+class Client(db.Model):
     
-    __tablename__ = "client_invoice"
+    __tablename__ = "client"
 
     id = Column(BigInteger, Sequence('client_invoice_id_seq'), primary_key=True)
     name = Column(String(150), nullable=False)
-    client_type = Column(String(150), nullable=False)
-    description = Column(String(350), nullable=True)
-    invoice_id = db.Column(db.BigInteger, db.ForeignKey('invoice.inv_id'),
-                            nullable=False)
+    address = Column(Text, nullable=False)    
+    email = Column(String(150), nullable=False) 
+    phone = Column(String(20), nullable=False)        
+    post_addr = Column(String(20), nullable=False) 
+    invoice = db.relationship('Invoice', backref='client', lazy=True)
+ 
 
         
 

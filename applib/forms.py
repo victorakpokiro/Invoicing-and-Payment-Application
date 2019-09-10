@@ -20,28 +20,6 @@ def input_required():
     return check_required
 
 
-# def length(min=3, max=40):
-
-#     def _length(form, field):
-
-#         if len(field.data) < min:
-#             raise ValidationError("minimum length of %d"%min)
-
-#         if len(field.data) > max:
-#             raise ValidationError("max field length exceed")
-
-
-#     return _length
-
-
-# def input_required():
-
-#     def check_length( form, field ):
-#         if not field.data:
-#             raise ValidationError("input is required")
-
-#     return check_length
-
 
 def length( min=3, max=12 ):
 
@@ -151,33 +129,58 @@ class DiscountFrm(Form):
                                     })
 
 
-class CreateInvoiceForm(Form):
+class CreateClientForm(Form):
     name = StringField('Name :', [InputRequired()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
+
     address = TextAreaField('Address :', [InputRequired()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
+
     email = StringField('Email :', [InputRequired(), Email()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
+
     phone = StringField('Phone Number :', [InputRequired(), length(), 
                                                 check_inp_length()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
+
     post_addr = StringField('Postal-Address :', [InputRequired()], 
                                 render_kw={"class_": "form-control"})
+
+
+
+class CreateInvoiceForm(Form):
+    client_id = SelectField('Client Name', [InputRequired()], coerce=int, 
+                                render_kw={"class_": "js-single form-control", 
+                                            "style": "margin-bottom : 10px"})
+
+    client_type = SelectField('Client Type :', 
+                                [InputRequired()], choices=[
+                                            ('select', 'Select a Class...'),
+                                            ('Student', 'Student'), 
+                                            ('Individual', 'Individual'), 
+                                            ('Corporate', 'Corporate')],
+                                render_kw=  {"class_": "form-control", 
+                                                "style": "margin-bottom : 10px"})
+
     currency = SelectField('Currency :', 
-                                choices=[
-                                        ('select', 'Select...'),
-                                        ('ngn', 'NGN'), 
-                                        ('ghc', 'GHC'), 
-                                        ('usd', 'USD'),
-                                        ('eur', 'EUR')], 
-                                render_kw={"class_": "form-control", 
-                                           "style": "margin-bottom : 10px"})
+                                [InputRequired()], choices=[
+                                            ('select', 'Select...'),
+                                            ('NGN', 'NGN'), 
+                                            ('GHC', 'GHC'), 
+                                            ('USD', 'USD'),
+                                            ('EUR', 'EUR')], 
+                                render_kw=  {"class_": "form-control", 
+                                                "style": "margin-bottom : 10px"})
+
+    description = TextAreaField('Description :', render_kw={"class_": "form-control"})
 
 
+   
+        
 
 class BillsForm(Form):
     disc_type = StringField('disc_type', [input_required()])

@@ -7,33 +7,24 @@
 		<div class="row">
 
 			<div class="col-md-6 offset-md-3">
-
+				<h3 class="mb-5" style="text-align: center;"><b> CREATE INVOICE </b></h3>
 				<form action="" method="post">
 
-					<div class="form-group">
-						<label for="client_name"> Client Name </label>
-						<select name="client_name" id="client_name" class="js-single form-control" required>
-							<option>Select a User...</option>
-							{% for val in client_details%}
-							<option value="{{ val.name }}">{{ val.name }}</option>
-							{% endfor %}
-						</select>
-					</div>
-
-					<div class="form-group">
-						<label for="client_class"> Client Type </label>
-						<select name="client_class" id="client_class" class="form-control" required>
-							<option>Select a Class...</option>
-							<option>Student</option>
-							<option>Individual</option>
-							<option>Corporate</option>
-						</select>
-					</div>
-
-					<div class="form-group">
-						<label for="description">Description</label>
-						<textarea name="description" class="form-control" id="description" rows="3"></textarea>
-					</div>
+					{% for field in form %}
+						<div>
+							
+							<b>{{ field.label }}</b>
+							{{ field }}	
+						
+						<span>
+							{% if field.errors %}
+								{% for error in field.errors %}
+									{{error}}
+								{% endfor %}
+							{% endif%}
+						</span>
+						</div>
+					{% endfor %}
 
 					<div>
 						<hr style="margin-top: 65px">
