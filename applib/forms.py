@@ -153,8 +153,11 @@ class CreateClientForm(Form):
 
 
 class CreateInvoiceForm(Form):
-    client_id = SelectField('Client Name', [InputRequired()], coerce=int, 
-                                render_kw={"class_": "js-single form-control", 
+    client_id = SelectField('Client Name :', 
+                                [InputRequired()], 
+                                coerce=int, 
+                                render_kw={ "class_": "js-single",
+                                            "class_": "form-control",
                                             "style": "margin-bottom : 10px"})
 
     client_type = SelectField('Client Type :', 
