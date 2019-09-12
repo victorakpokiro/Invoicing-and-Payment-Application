@@ -67,9 +67,9 @@ def send_email(filename, receiver_email, msg_subject, email_body):
 
         body = email_body
         port = email_params['ssl']
-        smtp_server =  email_params['smtp_server']
+        smtp_server =  email_params['smtp']
         password = email_params['passwd']
-        
+        sender_email = email_params['sender']
         message = MIMEMultipart()
         message["Subject"] = msg_subject
         message["From"] = email_params['sender']
