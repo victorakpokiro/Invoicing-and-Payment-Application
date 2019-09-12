@@ -114,7 +114,7 @@ class Items(db.Model):
         nullable=False)
 
 
-class Email_queue(db.Model):
+class EmailQueue(db.Model):
 
     __tablename__ = "email_queue"
 
