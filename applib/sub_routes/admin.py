@@ -623,8 +623,7 @@ def edit_client(invoice_id):
                                 'address' : form.address.data,
                                 'email' : form.email.data,
                                 'phone' : form.phone.data,
-                                'post_addr' : form.post_addr.data,
-                                'currency' : form.currency.data                            
+                                'post_addr' : form.post_addr.data                           
                             })
                
 
