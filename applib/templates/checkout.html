@@ -46,7 +46,7 @@
 								<td>{{client_details.email}}</td>
 								<td>{{client_details.phone}}</td>
 								<td class="move_right"><a 
-									href="{{url_for('admin.edit_client', 						invoice_id=invoice_details.inv_id)}}" 
+									href="{{url_for('edit.edit_client', 						invoice_id=invoice_details.inv_id)}}" 
 									title="Edit Invoice" 
 									class="fas fa-edit" 
 									style="color: green"></a>
@@ -65,7 +65,7 @@
 
 				<p style="margin-bottom: 3px;">
 					<span style="font-size: 1.75rem;">Item Details</span> 
-					<a href="{{url_for('admin.add_item', 											invoice_id=invoice_details.inv_id)}}" 
+					<a href="{{url_for('add.add_item', 											invoice_id=invoice_details.inv_id)}}" 
 					style="float: right; margin-top: 15px; color: green"> Add Item </a>
 				</p>		
 				<table class="table table-striped table-condensed table-hover">
@@ -86,12 +86,12 @@
 								<td class="move_right w-15">{{item.rate}}</td>
 								<td class="move_right w-20">{{ kwargs['cur_fmt'](item.amount) }}</td>
 								<td class="move_right w-2">
-									<a 	href="{{url_for('admin.edit_item', 							item_id=item.id, 									invoice_id=invoice_details.inv_id)}}" 
+									<a 	href="{{url_for('edit.edit_item', 							item_id=item.id, 									invoice_id=invoice_details.inv_id)}}" 
 										title="Edit Item" 
 										class="fas fa-edit" 
 										style="color: green"></a>
 
-									<a 	href="{{url_for('admin.delete_item', 						item_id=item.id, invoice_id=invoice_details.inv_id)}}" 
+									<a 	href="{{url_for('delete.delete_item', 						item_id=item.id, invoice_id=invoice_details.inv_id)}}" 
 										title="Delete Item" 
 										class="fas fa-trash-alt" 
 										style="color: green" id="delete_item"></a>
@@ -111,8 +111,9 @@
 					<div class="col-md-6">
 						<p style="margin-bottom: 3px;">
 							<span style="font-size: 1.75rem;">Discount Applied</span> 
-							<a id="delete_discount" href="{{url_for('admin.delete_discount',	invoice_id=invoice_details.inv_id)}}" 
-							style="float: right; margin-top: 15px; color: blue;"> Delete Discount </a>
+							<a href="{{url_for('add.add_discount', invoice_id=invoice_details.inv_id)}}" style="color: blue; margin-left: 15%;"> Edit Discount </a>
+							<a id="delete_discount" href="{{url_for('delete.delete_discount',	invoice_id=invoice_details.inv_id)}}" 
+							style="float: right; margin-top: 15px; color: red;"> Delete Discount </a>
 						</p>
 						<table class="table table-striped table-condensed table-hover">
 							<thead>

@@ -41,23 +41,27 @@ mod = Blueprint('admin', __name__, url_prefix='/admin')
 # +-------------------------+-------------------------+
 
 
-def generate_pdf(_template, args, kwargs ):
-
-    env = Environment(loader=FileSystemLoader('applib/templates/'))
-    template = env.get_template(_template)
-    _template = template.render(posts=args, **kwargs)
-
-    pdf_output = 'invoice_%d.pdf'%random.randrange(10000)  #when rendering with flask this library requires a co plte directory for the style and image file
-    pdfkit.from_string(_template, pdf_output, {'orientation': 'Portrait'})
-
-    send_email(pdf_output, kwargs['email'], "message subject", kwargs['body'])
-
-
 def comma_separation(amt):
     _len = len(str(amt))
     fmt = '{:' + str(_len) + ',.2f}' 
     return fmt.format(float(amt))
 
+def generate_pdf(_template, args, kwargs):
+
+    env = Environment(loader=FileSystemLoader('applib/templates/'))
+
+    template = env.get_template(_template)
+    _template = template.render(posts=args, **kwargs)
+
+    template1 = env.get_template('email_body.html')
+    _template1 = template1.render(items=args, **kwargs)
+
+    pdf_output = 'invoice_%d.pdf'%random.randrange(10000)  #when rendering with flask this library requires a co plte directory for the style and image file
+    pdfkit.from_string(_template, pdf_output, {'orientation': 'Portrait'})
+
+    message_subject = kwargs['type']+" Generated for "+ kwargs['name'].upper()
+
+    send_email(pdf_output, kwargs['email'], message_subject, _template1)
 
 def send_email(filename, receiver_email, msg_subject, email_body):
     
@@ -98,16 +102,15 @@ def send_email(filename, receiver_email, msg_subject, email_body):
                 sender_email, receiver_email, message.as_string() # convert body and attachment messages to string
                 )
 
-
 def calc_discount(query_disc_type, query_disc_value, query_sub_total):
     
     if query_disc_type == 'fixed':
         return query_disc_value
     elif query_disc_type == 'percent':
         return int(query_disc_value)/100.0 * int(query_sub_total)
-        # return applied
 
     return 0
+
 
 
 
@@ -143,7 +146,7 @@ def login():
 
 
     return render_template('login.html')
-    
+
 
 @mod.route('/')
 @login_required
@@ -172,124 +175,12 @@ def index():
                                           ).order_by(
                                                         m.Invoice.inv_id.desc()
                                                      ).all()
-                                 
-       
+                                  
     msg = request.args.get('msg')
     if msg:
         flash(msg)
 
     return render_template('index.html', value=qry)
-
-
-@mod.route('/add/item/<int:invoice_id>', methods=['POST', 'GET'])
-@login_required
-def add_item(invoice_id):
-
-    with m.sql_cursor() as db:
-       
-        client_param = db.query(
-                                    m.Invoice.client_type,
-                                    m.Client.name
-                                ).join(
-                                        m.Client, 
-                                        m.Client.id == m.Invoice.client_id 
-                                       ).filter(
-                                                m.Invoice.inv_id == invoice_id 
-                                                ).first()
-
-        form = ItemForm(request.form, client_name=client_param.name, 
-                        client_type=client_param.client_type) 
-
-    if request.method == 'POST' and form.validate():
-
-        params={
-                    'item_desc': form.item_desc.data,
-                    'qty': form.qty.data,
-                    'rate': form.rate.data,
-                    'amount': form.amt.data
-                }
-
-        with m.sql_cursor() as db:
-
-            params['invoice_id'] = invoice_id 
-
-            # insert item query
-            item = m.Items(**params)
-            db.add(item)
-            db.flush()
-
-            return redirect(url_for('admin.index'))
-
-
-    return render_template('add_item.html', form=form)
-
-
-@mod.route('/add/discount/<int:invoice_id>', methods=['POST', 'GET'])
-@login_required
-def add_discount(invoice_id):
-
-    with m.sql_cursor() as db:
-
-        param = {'invoice_id': invoice_id}
- 
-        # select query with WHERE request
-        resp = db.query(
-                            m.Items.id,
-                            m.Items.item_desc,
-                            m.Items.qty,
-                            m.Items.rate,
-                            m.Items.amount,
-                        ).filter_by(**param).all()
-
-        resp_amount = 0
-
-        if not resp:
-            msg = "Please add an item to the invoice first."
-            return redirect(url_for('admin.index', msg=msg))
-
-        # select query with WHERE request
-        output = db.query(
-                            m.Invoice.disc_value, m.Invoice.disc_type
-                          ).filter_by(
-                                 inv_id=invoice_id
-                                )
-
-        temp_output = output.first()
-         
-        for x in resp:
-            resp_amount += float(x.amount)
-
-        if temp_output.disc_type is None:
-            form = DiscountFrm(sub_total=resp_amount)
-
-        else:
-
-            form = DiscountFrm()
-            form.discount_type.data = temp_output.disc_type
-            form.discount.data = temp_output.disc_value
-            form.disc_amt.data = calc_discount(temp_output.disc_type, 
-                                               temp_output.disc_value, 
-                                               resp_amount)
-            form.sub_total.data = resp_amount 
-            form.new_total.data = resp_amount - float(form.disc_amt.data)
-
-         
-        if request.method == 'POST':
-            
-            form = DiscountFrm(**request.form)
-            
-            if form.validate():
-
-                assert resp_amount > 0 , 'total amount is not supposed to be zero amount'
-
-                #sql update query
-                output.update({
-                            'disc_type' : form.discount_type.data,
-                            'disc_value' : form.discount.data,                      
-                        })   
-                return redirect(url_for('admin.index'))        
-
-        return render_template('disc.html', form=form)
 
 
 @mod.route('/checkout/<int:invoice_id>', methods=['POST', 'GET'])
@@ -298,35 +189,50 @@ def checkout(invoice_id):
 
     with m.sql_cursor() as db:
         
-        invoice_details = db.query(m.Invoice
-                                   ).filter_by(inv_id=invoice_id
-                                              ).first()
+        client_invoice_details = db.query(
+                                            m.Invoice.inv_id,
+                                            m.Invoice.date_value,
+                                            m.Invoice.invoice_no,
+                                            m.Invoice.purchase_no,
+                                            m.Invoice.disc_value,
+                                            m.Invoice.disc_type,
+                                            m.Invoice.currency,
+                                            m.Client.address,
+                                            m.Client.post_addr,
+                                            m.Client.name,
+                                            m.Client.email,
+                                            m.Client.phone
+                                        ).join(
+                                                m.Client,
+                                                m.Client.id == m.Invoice.client_id
+                                                ).filter(
+                                                    m.Invoice.inv_id == invoice_id
+                                                    ).first()
 
-        client_details = db.query(m.Client
-                                   ).filter_by(id=invoice_id
-                                              ).first()
 
         item_for_amount = db.query(m.Items.id, m.Items.item_desc,
                                    m.Items.qty, m.Items.rate,
                                    m.Items.amount
                                   ).filter_by(invoice_id=invoice_id).all()
 
+
         data = {
-                    'invoice_no': invoice_details.invoice_no,
+                    'invoice_no': client_invoice_details.invoice_no,
                     'date_value': datetime.datetime.now().strftime("%Y-%m-%d"),
                     'invoice_due': datetime.datetime.now().strftime("%Y-%m-%d"),
-                    'purchase_order_no': invoice_details.purchase_no,
-                    'discount_applied': invoice_details.disc_value,
-                    'address': client_details.address,
-                    'post_addr': client_details.post_addr,
-                    'name': client_details.name,
-                    'disc_type': invoice_details.disc_type,
-                    'email': client_details.email,
-                    'phone': client_details.phone,
-                    'currency': invoice_details.currency
+                    'purchase_order_no': client_invoice_details.purchase_no,
+                    'discount_applied': client_invoice_details.disc_value,
+                    'address': client_invoice_details.address,
+                    'post_addr': client_invoice_details.post_addr,
+                    'name': client_invoice_details.name,
+                    'disc_type': client_invoice_details.disc_type,
+                    'email': client_invoice_details.email,
+                    'phone': client_invoice_details.phone,
+                    'currency': client_invoice_details.currency
                 }
 
         data['cur_fmt'] = comma_separation
+
 
         _amount = 0
         total = 0
@@ -334,8 +240,9 @@ def checkout(invoice_id):
         for x in item_for_amount:
             _amount += float(x.amount)
 
-        data['discount'] = calc_discount(invoice_details.disc_type, 
-                                         invoice_details.disc_value, _amount)
+        data['subtotal'] = _amount
+        data['discount'] = calc_discount(client_invoice_details.disc_type, 
+                                         client_invoice_details.disc_value, _amount)
 
         total = _amount - float(data['discount'])
         data['total'] = total
@@ -350,7 +257,8 @@ def checkout(invoice_id):
                               })
 
             # this needs to be replaced to an email template 
-            data['body'] = "Please see the invoice attached in mail."
+            # data['body'] = "Please see the invoice attached in mail."
+            data['type'] = "Invoice"
             generate_pdf(_template='new_invoice.html', args=items, kwargs=data)
             
             msg = "Invoice has been emailed to the customer successfully."
@@ -359,8 +267,8 @@ def checkout(invoice_id):
 
         # render the page on GET 
         return render_template('checkout.html', 
-                                invoice_details=invoice_details,
-                                client_details=client_details, 
+                                invoice_details=client_invoice_details,
+                                client_details=client_invoice_details, 
                                 kwargs=data,
                                 items=item_for_amount)
 
@@ -433,203 +341,80 @@ def receipt(invoice_id):
 
     with m.sql_cursor() as db:
 
-        invoice_details = db.query(m.Invoice
-                                   ).filter_by(inv_id=invoice_id
-                                              ).first()
+        client_invoice_details = db.query(
+                                            m.Invoice.inv_id,
+                                            m.Invoice.date_value,
+                                            m.Invoice.invoice_no,
+                                            m.Invoice.purchase_no,
+                                            m.Invoice.disc_value,
+                                            m.Invoice.disc_type,
+                                            m.Invoice.currency,
+                                            m.Client.address,
+                                            m.Client.post_addr,
+                                            m.Client.name,
+                                            m.Client.email,
+                                            m.Client.phone
+                                        ).join(
+                                                m.Client,
+                                                m.Client.id == m.Invoice.client_id
+                                                ).filter(
+                                                    m.Invoice.inv_id == invoice_id
+                                                    ).first()
 
-        client_details = db.query(m.Client
-                                   ).filter_by(id=invoice_id
-                                              ).first()
 
         item_for_amount = db.query(m.Items.id, m.Items.item_desc,
                                    m.Items.qty, m.Items.rate,
                                    m.Items.amount
                                   ).filter_by(invoice_id=invoice_id).all()
 
+
         data = {
-                    'invoice_no': invoice_details.invoice_no,
+                    'invoice_no': client_invoice_details.invoice_no,
                     'date_value': datetime.datetime.now().strftime("%Y-%m-%d"),
                     'invoice_due': datetime.datetime.now().strftime("%Y-%m-%d"),
-                    'purchase_order_no': invoice_details.purchase_no,
-                    'discount_applied': invoice_details.disc_value,
-                    'address': client_details.address,
-                    'post_addr': client_details.post_addr,
-                    'name': client_details.name,
-                    'disc_type': invoice_details.disc_type,
-                    'email': client_details.email,
-                    'phone': client_details.phone,
-                    'currency': invoice_details.currency
+                    'purchase_order_no': client_invoice_details.purchase_no,
+                    'discount_applied': client_invoice_details.disc_value,
+                    'address': client_invoice_details.address,
+                    'post_addr': client_invoice_details.post_addr,
+                    'name': client_invoice_details.name,
+                    'disc_type': client_invoice_details.disc_type,
+                    'email': client_invoice_details.email,
+                    'phone': client_invoice_details.phone,
+                    'currency': client_invoice_details.currency
                 }
 
         data['cur_fmt'] = comma_separation
 
+
         param = {'invoice_id': invoice_id}
 
-        # select query with WHERE request
         item_for_amount = db.query(
-                            m.Items.id,
-                            m.Items.item_desc,
-                            m.Items.qty,
-                            m.Items.rate,
-                            m.Items.amount
-                        ).filter_by(**param).all()
-       
+                                    m.Items.id,
+                                    m.Items.item_desc,
+                                    m.Items.qty,
+                                    m.Items.rate,
+                                    m.Items.amount
+                                ).filter_by(**param).all()
+
+        items = []
         for y in item_for_amount:
-            items = []
             items.append({
                             'id': y.id, 'item_desc': y.item_desc,
                             'qty': y.qty, 'rate': y.rate, 'amount': y.amount
                         })
 
+        _amount = 0.00
         for x in item_for_amount:
             _amount += float(x.amount)
 
-        data['discount'] = get_discount(invoice_details.disc_type,
-                            invoice_details.disc_value, _amount
+        data['subtotal'] = _amount
+        data['discount'] = calc_discount(client_invoice_details.disc_type,
+                            client_invoice_details.disc_value, _amount
                             )
 
         if request.method == 'GET':
             return generate_pdf(_template='new_invoice.html', 
                                 args=items, kwargs=data)
-
-
-@mod.route('/edit/item/<int:invoice_id>/<int:item_id>', methods=['POST', 'GET'])
-@login_required
-def edit_item(invoice_id, item_id):
-
-    with m.sql_cursor() as db:
-        param = {'id': item_id}
-        # select query with WHERE request
-        resp = db.query(
-                    m.Items.id,
-                    m.Items.item_desc,
-                    m.Items.qty,
-                    m.Items.rate,
-                    m.Items.amount,
-                ).filter_by(**param)
-       
-
-        temp_resp = resp.first()
-        client_param = db.query(
-                        m.Invoice.client_type,
-                        m.Client.name
-                        ).join(
-                                m.Client, 
-                                m.Client.id == m.Invoice.client_id 
-                               ).filter(
-                                        m.Invoice.inv_id == invoice_id 
-                                        ).first()
-
-        form = ItemForm()
-        form.client_name.data = client_param.name
-        form.client_type.data = client_param.client_type
-        form.item_desc.data = temp_resp.item_desc
-        form.qty.data = temp_resp.qty 
-        form.amt.data = temp_resp.amount
-
-        if request.method == 'POST':
-
-            form = ItemForm(request.form)
-
-            if form.validate():
-         
-                resp.update(
-                    {
-                        'item_desc' : form.item_desc.data,
-                        'qty' : form.qty.data,
-                         'rate' : form.rate.data,
-                        'amount' : form.amt.data                        
-                    })
-              
-                return redirect(url_for('admin.checkout', invoice_id=invoice_id)) 
-
-
-    return render_template('edit_item.html', form=form)
-
-
-@mod.route('/delete/item/<int:invoice_id>/<int:item_id>')
-@login_required
-def delete_item(invoice_id, item_id):
-
-    with m.sql_cursor() as db:
-        param = {'id': item_id}
-        # delete object query with WHERE request
-
-        db.query(
-                    m.Items                     
-                ).filter_by(**param).delete()
-        
-
-        return redirect(url_for('admin.checkout', invoice_id=invoice_id)) 
-
-
-@mod.route('/delete/discount/<int:invoice_id>')
-@login_required
-def delete_discount(invoice_id):
-
-    with m.sql_cursor() as db:
-        param = {'inv_id': invoice_id}
-        # update object query with WHERE query
-
-        resp = db.query(
-                            m.Invoice.disc_type, 
-                            m.Invoice.disc_value                     
-                        ).filter_by(
-                                    **param
-                                    ).update(
-                                                {
-                                                    'disc_type' : None ,
-                                                    'disc_value' : None                       
-                                                }
-                                            )
-
-        return redirect(url_for('admin.checkout', invoice_id=invoice_id)) 
-
-
-@mod.route('/edit/invoice/<int:invoice_id>', methods=['POST', 'GET'])
-@login_required
-def edit_client(invoice_id):
-
-    with m.sql_cursor() as db:
-        param = {'id': invoice_id}
-
-        # select query with WHERE request
-        resp = db.query(
-                            m.Client.email,
-                            m.Client.name,
-                            m.Client.phone,
-                            m.Client.address,
-                            m.Client.post_addr
-                        ).filter_by(**param)
-
-        temp_resp = resp.first()
-
-        form = CreateClientForm()
-        form.name.data = temp_resp.name
-        form.address.data = temp_resp.address
-        form.email.data = temp_resp.email 
-        form.phone.data = temp_resp.phone
-        form.post_addr.data = temp_resp.post_addr
-
-        if request.method == 'POST':
-
-            form = CreateClientForm(request.form)
-
-            if form.validate():
-
-                resp.update(
-                            {
-                                'name' : form.name.data,
-                                'address' : form.address.data,
-                                'email' : form.email.data,
-                                'phone' : form.phone.data,
-                                'post_addr' : form.post_addr.data                           
-                            })
-               
-
-                return redirect(url_for('admin.checkout', invoice_id=invoice_id)) 
-                
-    return render_template('create_client.html', form=form)
 
 
 @mod.route("/logout")

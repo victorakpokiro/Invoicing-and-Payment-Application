@@ -124,11 +124,11 @@
 										<td> {{ val.email }} </td>
 										<td> {{ val.sub_total or '0.00' }} </td>
 										<td> 
-											<a href="{{url_for('admin.add_item', 				invoice_id=val.inv_id )}}" 			title="Add Invoice Item"> 
+											<a href="{{url_for('add.add_item', 				invoice_id=val.inv_id )}}" 			title="Add Invoice Item"> 
 													<i class="fas fa-plus-square fa-lg" style="color: green"></i>
 										  	</a>									
 											&nbsp;
-											<a href="{{url_for('admin.add_discount', 			invoice_id=val.inv_id)}}" 			title="Apply Discount To Invoice"><i class="fas fa-calculator fa-lg" style="		color: green"></i></a> 
+											<a href="{{url_for('add.add_discount', 			invoice_id=val.inv_id)}}" 			title="Apply Discount To Invoice"><i class="fas fa-calculator fa-lg" style="		color: green"></i></a> 
 											&nbsp;							 
 										</td>
 									</tr>
