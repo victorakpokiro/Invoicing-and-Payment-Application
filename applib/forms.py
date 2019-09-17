@@ -3,12 +3,12 @@ from wtforms.fields import (BooleanField, StringField,
                             TextField, SubmitField, DateField, 
                             IntegerField, TextAreaField, SelectField,
                             HiddenField, DateTimeField,PasswordField)
-from wtforms.validators import InputRequired, Email, Length, ValidationError
+from wtforms.validators import input_required, Email, Length, ValidationError
 
 from wtforms import form, validators, fields
 from wtforms.form import Form
 # from wtforms.fields import 
-# from wtforms.validators import ValidationError, InputRequired, Length, Email
+# from wtforms.validators import ValidationError, input_required, Length, Email
 
 
 
@@ -51,6 +51,8 @@ def check_inp_length():
 def check_sign():
 
     def negative(form, field):
+        if not field.data:
+            raise ValidationError("valid input required")
         if float(field.data) < 1:
             raise ValidationError("valid input required.")
 
@@ -87,15 +89,15 @@ class ItemForm(Form):
                                 render_kw={"class_": "form-control", 
                                             "readonly": "readonly"})
 
-    item_desc = TextAreaField('Description :', [InputRequired()], 
+    item_desc = TextAreaField('Description :', [input_required()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
 
-    qty = IntegerField('Quantity :', [InputRequired(), check_sign()], 
+    qty = IntegerField('Quantity :', [input_required(), check_sign()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
 
-    rate = IntegerField('Rate :', [InputRequired(), check_sign()], 
+    rate = IntegerField('Rate :', [input_required(), check_sign()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
     
@@ -131,57 +133,55 @@ class DiscountFrm(Form):
 
 
 class CreateClientForm(Form):
-    name = StringField('Name :', [InputRequired()], 
+    name = StringField('Name :', [input_required()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
 
-    address = TextAreaField('Address :', [InputRequired()], 
+    address = TextAreaField('Address :', [input_required()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
 
-    email = StringField('Email :', [InputRequired(), Email()], 
+    email = StringField('Email :', [input_required(), Email()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
 
-    phone = StringField('Phone Number :', [InputRequired(), length(), 
+    phone = StringField('Phone Number :', [input_required(), length(), 
                                                 check_inp_length()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
 
-    post_addr = StringField('Postal-Address :', [InputRequired()], 
+    post_addr = StringField('Postal-Address :', [input_required()], 
                                 render_kw={"class_": "form-control"})
 
 
 
 class CreateInvoiceForm(Form):
     client_id = SelectField('Client Name :', 
-                                [InputRequired()], 
+                                [input_required()], 
                                 coerce=int, 
                                 render_kw={ "class_": "js-single",
                                             "class_": "form-control",
                                             "style": "margin-bottom : 10px"})
 
     client_type = SelectField('Client Type :', 
-                                [InputRequired()], choices=[
-                                            ('select', 'Select a Class...'),
-                                            ('Student', 'Student'), 
-                                            ('Individual', 'Individual'), 
-                                            ('Corporate', 'Corporate')],
+                                [input_required()], coerce=int, choices=[
+                                            (0, 'Select a Class...'),
+                                            (1, 'Student'), 
+                                            (2, 'Individual'), 
+                                            (3, 'Corporate')],
                                 render_kw=  {"class_": "form-control", 
-                                                "style": "margin-bottom : 10px"})
+                                             "style": "margin-bottom : 10px"})
 
     currency = SelectField('Currency :', 
-                                [InputRequired()], choices=[
-                                            ('select', 'Select...'),
-                                            ('NGN', 'NGN'), 
-                                            ('GHC', 'GHC'), 
-                                            ('USD', 'USD'),
-                                            ('EUR', 'EUR')], 
+                                [input_required()],
+                                coerce=int, 
+                                choices=[(0, 'Select...'),
+                                        (1, 'NGN'), 
+                                        (2, 'USD'),
+                                        (3, 'GHC'), 
+                                        (4, 'EUR')], 
                                 render_kw=  {"class_": "form-control", 
-                                                "style": "margin-bottom : 10px"})
-
-    description = TextAreaField('Description :', render_kw={"class_": "form-control"})
-
+                                             "style": "margin-bottom : 10px"})
 
    
         
@@ -226,10 +226,10 @@ class ExpenseForm(Form):
  
 class LoginForm(Form):
 
-    usr_name = StringField("Username", [InputRequired()], 
+    usr_name = StringField("Username", [input_required()], 
                             render_kw={"class_": "form-control"})
 
-    psd_wrd = PasswordField("Password", [InputRequired()],
+    psd_wrd = PasswordField("Password", [input_required()],
                             render_kw={"class_": "form-control"})
          
  

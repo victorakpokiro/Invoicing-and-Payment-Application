@@ -12,7 +12,7 @@ from flask import (Blueprint, request, url_for,
 from applib.model import db_session
 from applib import model as m 
 from applib.forms import CreateClientForm
-from applib.lib.helper import get_config 
+from applib.lib.helper import get_config, date_format
 
 # from applib.main import login_manager
 
@@ -25,7 +25,7 @@ mod = Blueprint('client', __name__, url_prefix='/admin/client')
 
 
 
-@mod.route('/create/client', methods=['POST', 'GET'])
+@mod.route('/add', methods=['POST', 'GET'])
 @login_required
 def create_client():
 
@@ -38,7 +38,7 @@ def create_client():
             client_params = {
                     'name' : form.name.data, 'address' : form.address.data,
                     'phone' : form.phone.data, 'email' : form.email.data,
-                    'post_addr' : form.post_addr.data, 
+                    'post_addr' : form.post_addr.data, "date_created": datetime.datetime.now()
                 }
 
             client = m.Client(**client_params)
@@ -50,7 +50,7 @@ def create_client():
 
     return render_template('create_client.html', form=form)
 
-@mod.route('/invoice/<int:invoice_id>', methods=['POST', 'GET'])
+@mod.route('/edit/<int:invoice_id>', methods=['POST', 'GET'])
 @login_required
 def edit_client(invoice_id):
 
@@ -94,4 +94,21 @@ def edit_client(invoice_id):
                 return redirect(url_for('invoice.checkout', invoice_id=invoice_id)) 
                 
     return render_template('create_client.html', form=form)
+
+
+
+@mod.route("/")
+@login_required
+def client_list():
+
+    with m.sql_cursor() as db:
+        qry = db.query(m.Client.id, m.Client.name,                         
+                       m.Client.address, m.Client.email,
+                       m.Client.phone, m.Client.date_created
+                       ).order_by(m.Client.id.desc()
+                                  ).limit(50).all()
+
+
+    return render_template("client.html", data=qry, date_format=date_format)
+
 

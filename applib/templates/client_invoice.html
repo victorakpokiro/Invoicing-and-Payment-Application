@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from "base.html" import form_layout %}
 
 {% block main %}
 
@@ -10,28 +11,22 @@
 				<h3 class="mb-5 header_text"><b> CREATE INVOICE </b></h3>
 				<form action="" method="post">
 
-					{% for field in form %}
-						<div>
-							
-							<b>{{ field.label }}</b>
-							{{ field }}	
+					{{ form_layout(form) }}
+					
+					<br>
+					<hr>
+					<div class="row">
+
 						
-						<span>
-							{% if field.errors %}
-								{% for error in field.errors %}
-									{{error}}
-								{% endfor %}
-							{% endif%}
-						</span>
+						<div class="col-md-6">
+							
+							{% set link = url_for('invoice.index') %}
+							<a href="{{link}}" class="btn btn-default btn_cl btn-block"> Back </a>	
 						</div>
-					{% endfor %}
+						<div class="col-md-6">
+							<button type="submit" class="btn btn-success btn-block" style="width: 100%; margin-bottom: 7px; margin-top: 5px"> Add Invoice </button>
+						</div>
 
-					<div>
-						<hr style="margin-top: 65px">
-						<button type="submit" class="btn btn-success" style="width: 100%; margin-bottom: 7px; margin-top: 5px"> Add Invoice </button>
-
-						{% set link = url_for('invoice.index') %}
-						<a href="{{link}}" class="btn" style="float: right; width: 100%; height: 40px; background-color: #eee"> Back </a>	
 					</div>
 
 				</form>

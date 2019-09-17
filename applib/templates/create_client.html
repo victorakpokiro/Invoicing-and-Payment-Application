@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from "base.html" import form_layout %}
 
 {% block main %}
 
@@ -24,77 +25,20 @@
 
 		<div class="row">
 
-			<div class="col-md-10 offset-md-1">
+			<div class="col-md-6 offset-md-3">
 				<h3 class="mb-5 header_text"><b> CREATE CLIENT </b></h3>
 				<form action="" method="post">
 					<div>
-
-						<div class="form-row">
-							<div class="form-group col-md-6">
-								<b>{{form.name.label}}</b>
-								{{form.name}}
-								{% if form.name.errors %}
-									{% for error in form.name.errors %}
-										<p style="margin-bottom: 3px">{{error}}</p>
-									{% endfor %}
-								{% endif%}
-							</div>
-							<div class="form-group col-md-6">
-								<b>{{form.email.label}}</b>
-								{{form.email}}
-								{% if form.email.errors %}
-									{% for error in form.email.errors %}
-										<p style="margin-bottom: 3px">{{error}}</p>
-									{% endfor %}
-								{% endif%}
-							</div>
+						{{form_layout(form)}} 
+					</div> <br>
+					<hr class="space_top">
+					<div class="row">
+						<div class="col-md-6">	
+							{% set link = url_for('client.client_list')%}
+						 	<a href="{{link}}" class="btn btn-default btn_cl btn-block"> Back </a>	
 						</div>
-						
-						<div class="form-row">
-							<div class="form-group col-md-6">
-								<b>{{form.phone.label}}</b>
-								{{form.phone}}
-								{% if form.phone.errors %}
-									{% for error in form.phone.errors %}
-										<p style="margin-bottom: 3px">{{error}}</p>
-									{% endfor %}
-								{% endif%}	
-							</div>
-
-							<div class="form-group col-md-6">
-								<b>{{form.post_addr.label}}</b>
-								{{form.post_addr}}
-								{% if form.post_addr.errors %}
-									{% for error in form.post_addr.errors %}
-										<p style="margin-bottom: 3px">{{error}}</p>
-									{% endfor %}
-								{% endif%}
-							</div>
-					
-						</div>
-
-
-						<div class="form-row">
-							<div class="form-group col-md-12">
-								<b>{{form.address.label}}</b>
-								{{form.address}}
-								{% if form.address.errors %}
-									{% for error in form.address.errors %}
-										<p style="margin-bottom: 3px">{{error}}</p>
-									{% endfor %}
-								{% endif%}
-							</div>	
-						</div>
-
-					</div>
-					<hr style="margin-top: 65px">
-					<div class="form-row" style="margin-top: 30px">
-						<div class="col-md-3">
-							<button type="submit" class="btn btn-success" style="width: 100%;">Submit</button>
-						</div>
-						<div class="col-md-3">	
-							{% set link = url_for('invoice.index')%}
-						 	<a href="{{link}}" class="btn" style="width: 100%;height: 40px;background-color: #eee"> Back </a>	
+						<div class="col-md-6">
+							<button type="submit" class="btn btn-success btn-block">Submit</button>
 						</div>
 					</div>
 

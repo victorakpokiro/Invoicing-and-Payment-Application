@@ -119,10 +119,10 @@ def index():
 
     with m.sql_cursor() as db:
         #select query from invoice
-        sub = db.query(m.Items.invoice_id, m.func.sum(m.func.cast(
-                                                                    m.Items.amount, m.ptype.INTEGER
-                                                                  )
-                                                      ).label("sub_total"),
+        sub = db.query(m.Items.invoice_id, 
+                       m.func.sum(m.func.cast(m.Items.amount, 
+                                              m.ptype.INTEGER)
+                                  ).label("sub_total"),
                        ).group_by(
                             m.Items.invoice_id
                        ).subquery()
@@ -236,38 +236,29 @@ def checkout(invoice_id):
                                 items=item_for_amount)
 
 
-@mod.route('/client/invoice', methods=['POST', 'GET'])
+@mod.route('/add', methods=['POST', 'GET'])
 @login_required
 def client_invoice():
+    
+    form = CreateInvoiceForm(request.form)    
+    form.client_id.choices = [(0, 'Select a User...')] 
+
     with m.sql_cursor() as db:
-        client_details = db.query(m.Client.id,
-                                    m.Client.name).first()
-        form = CreateInvoiceForm(request.form)
-        form_choice = [(-1, 'Select a User...')] 
-        another_choice = [(g.id, g.name) for g in db.query(m.Client)]
-        form.client_id.choices = form_choice + another_choice
+        qry = db.query(m.Client).order_by(m.Client.id.desc()).all()              
+        form.client_id.choices.extend([(g.id, g.name) for g in qry])
 
-    if request.method == 'POST' and form.validate():
-
-        params = { 
-                    'client_id' : form.client_id.data,
-                    'client_type' : form.client_type.data,
-                    'currency' : form.currency.data,
-                    'description' : form.description.data,
-                    'date_value' : datetime.datetime.now(),
-                    'invoice_due' : datetime.datetime.now()
-                }
-
-        with m.sql_cursor() as db:
-
-            invoice = m.Invoice(**params)
+        if request.method == 'POST' and form.validate():
+     
+            # with m.sql_cursor() as db:
+            invoice = m.Invoice()
+            m.form2model(form, invoice)
+            invoice.date_value = datetime.datetime.now()
             db.add(invoice)
             db.flush()
             invoice.invoice_no = 'INV-%d' %invoice.inv_id
             invoice.purchase_no = invoice.inv_id
 
             return redirect(url_for('item.add_item', invoice_id=invoice.inv_id))
-
 
     return render_template('client_invoice.html', form=form)
 

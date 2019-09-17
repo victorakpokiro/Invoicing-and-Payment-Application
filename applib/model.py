@@ -95,9 +95,9 @@ class Invoice(db.Model):
     invoice_no = Column(String(30))   
     date_value = Column(DateTime())  
     invoice_due = Column(DateTime())
-    client_type = Column(String(150), nullable=False)
-    description = Column(String(350), nullable=True) 
-    currency  = Column(String(3), nullable=False) 
+    client_type = Column(Integer, nullable=False)
+    # description = Column(String(350), nullable=True) 
+    currency  = Column(Integer, nullable=False) 
     client_id =  db.Column(db.BigInteger, db.ForeignKey('client.id'), nullable=False)
     item = db.relationship('Items', backref='invoice', lazy=True)
 
@@ -136,6 +136,7 @@ class Client(db.Model):
     email = Column(String(150), nullable=False) 
     phone = Column(String(20), nullable=False)        
     post_addr = Column(String(20), nullable=False) 
+    date_created= Column(DateTime(), nullable=False)
     invoice = db.relationship('Invoice', backref='client', lazy=True)
  
 
