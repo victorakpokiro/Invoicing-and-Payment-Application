@@ -7,28 +7,187 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='fontawesome/css/all.css') }}">
 
 	<style>
+		body {
+		  font-family: "Lato", sans-serif;
+		}
+		
 		.footer{ 
-		       position: fixed;     
-		       text-align: center;    
-		       bottom: 0px; 
-		       width: 100%;
-		       color: green;
-	   		}
+	       position: fixed;     
+	       text-align: center;    
+	       bottom: 0px; 
+	       width: 100%;
+	       color: green;
+   		}
+		
+		.sidenav {
+		  height: 100%;
+		  width: 0;
+		  position: fixed;
+		  z-index: 1;
+		  top: 0;
+		  left: 0;
+		  background-color: #F4F6F6;
+		  overflow-x: hidden;
+		  transition: 0.5s;
+		  padding-top: 60px;
+		}
+
+		.sidenav a {
+		  padding: 8px 8px 8px 32px;
+		  text-decoration: none;
+		  font-size: 15px;
+		  color: black;
+		  display: block;
+		  transition: 0.3s;
+		}
+
+		.sidenav a:hover {
+		  color: #FBFCFC;
+		  background-color: #18BA4C
+		}
+		
+		.sidenav .closebtn {
+		  position: absolute;
+		  top: 0;
+		  right: 25px;
+		  font-size: 36px;
+		  margin-left: 50px;
+		  color: #17202A
+		}
+
+		@media screen and (max-height: 450px) {
+		  .sidenav {padding-top: 15px;}
+		  .sidenav a {font-size: 18px;}
+		} 
+
+		.space_between{
+			margin-bottom: 15px;
+		}
+		
+		.space_top{
+			margin-top: 20px;
+		}
+		.btn_cl {
+			background-color: #eee;
+		}
+		
+		.error {
+			color: #c35530 !important;
+		}
+ 		{% block in_style %}
+ 		{% endblock %}
+ 
 	</style>
 </head>
 <body>
+	
+	{% macro form_layout(form) %}
+		
+		{% for f in form %}
+			{% if not f.type == 'HiddenField' %}
 
+			<div class="form-group">
+				{{f.label}}
+				{{f()}}
 
+				{% for err in f.errors %}
+				    <small id="{{f.name}}" class="form-text text-muted error"> {{err}} </small>
+				{% endfor %}
+			</div>
+			{% endif %}
+		{% endfor %}
 
+	{% endmacro %}
+	{% block side_menu %} 
+	
+	<div id="mySidenav" class="sidenav">
 
-	{% block main %}{% endblock %}
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()" 	   onmouseover="this.style.backgroundColor='transparent';">
+			&times;
+		</a>
+
+		<a href="{{url_for('admin.create_client')}}" class="btn">
+			<i class="fas fa-user fa-lg"></i>
+			&nbsp; Client
+		</a>
+
+		<a href="{{url_for('admin.index')}}" class="btn" style="margin-left: -11px;"><i class="fas fa-file-invoice fa-lg"></i>
+			&nbsp; Invoice
+		</a>
+		
+		<a href="{{url_for('expense.index')}}" class="btn" style="margin-left: -11px;"><i class="fas fa-file-invoice fa-lg"></i>
+			&nbsp; Expense
+		</a>
+
+		<a href="{{url_for('admin.logout_app')}}" class="btn" id="logout" 	  style="margin-left: -42px;"><i class="fas fa-power-off"></i>
+			&nbsp; Logout
+		</a>
+
+	</div>
+	
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<span title="Invoice Menu" style="font-size:30px; cursor:pointer; color:green;" onclick="openNav()">&#9776;
+						</span>
+				
+				{% with messages = get_flashed_messages() %}
+					{% if messages %}
+					    <div class="row">
+					    	<div class="col-md-12">
+					       		{% for message in messages %}
+					       		<div class="alert alert-primary" role="alert"> 
+					       			{{ message }} 
+					       		</div>
+					       		{% endfor %}
+					       	</div>
+						</div>
+					{% endif %} 
+
+				{% endwith %}
+
+			</div>
+
+		</div>
+	</div>
+	
+	{% endblock %}
+
+	<div class="container">
+	<div class="row">
+		{% block main %}{% endblock %}
+	</div>
+	</div>
 	<!-- <footer class="footer">
 		<i>… we make software work</i>
 	</footer> -->
 
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script> -->
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="{{url_for('static', filename='bootstrap/js/bootstrap.min.js')}}"></script> -->
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-	<script src="{{url_for('static', filename='bootstrap/js/bootstrap.min.js')}}"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		function openNav() {
+		  document.getElementById("mySidenav").style.width = "250px";
+		}
+
+		function closeNav() {
+		  document.getElementById("mySidenav").style.width = "0";
+		}
+
+		{% block scripts %}
+		{% endblock %}
+
+	</script>
+	
+	{% block script_files %}
+	{% endblock %}
+
+
+
 </body>
 </html>
 

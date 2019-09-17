@@ -1,7 +1,8 @@
 from wtforms import Form, validators, Field
 from wtforms.fields import (BooleanField, StringField, 
                             TextField, SubmitField, DateField, 
-                            IntegerField, TextAreaField, SelectField)
+                            IntegerField, TextAreaField, SelectField,
+                            HiddenField, DateTimeField)
 from wtforms.validators import InputRequired, Email, Length, ValidationError
 
 from wtforms import form, validators, fields
@@ -195,3 +196,34 @@ class BillsForm(Form):
 
         if field.data not in ['fixed', 'percentage']:
             raise ValidationError('Invalid discount type specified')
+
+
+
+class ExpenseForm(Form):
+
+    field_id = HiddenField("ID", render_kw={"class_": "form-control"})
+    # date_created = DateTimeField("Date Created", render_kw={"class_": "form-control"} )
+    
+    title = StringField("Title", [input_required()], 
+                        render_kw={"class_": "form-control"})
+
+    desc = TextAreaField("Description", [input_required()], 
+                         render_kw={"class_": "form-control"})
+
+    amount = StringField("Amount Required", [input_required()], render_kw={"class_": "form-control"})
+    
+    requested_by = StringField("Requested By", [input_required()], 
+                               render_kw={"class_": "form-control"})
+    
+    status = SelectField("Status", [input_required()], coerce=int, 
+                         choices=[(1, "Pending"), (2, "Approved"), (3, "Denied")], 
+                         render_kw={"class_": "form-control"})
+    
+    aproved_by = StringField("Approved By", render_kw={"class_": "form-control"})
+    
+     
+ 
+ 
+ 
+ 
+ 

@@ -36,7 +36,8 @@ login_manager.login_view = 'admin.login'
 
 from applib import model as m 
 from applib.api import InvoiceApi 
-import applib.sub_routes.admin as ad 
+import applib.sub_routes.admin as ad
+import applib.sub_routes.expense as exp  
 
 api = Api(app)
 
@@ -52,6 +53,7 @@ def load_user(user_id):
 # +-------------------------+-------------------------+
  
 app.register_blueprint(ad.mod)
+app.register_blueprint(exp.mod)
 api.add_resource(InvoiceApi, '/invoice/gen', methods=['POST'])
 
  
