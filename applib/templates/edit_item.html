@@ -15,7 +15,7 @@
 		<div class="row">
 
 			<div class="col-md-6 offset-md-3">
-				<h3 class="mb-5" style="text-align: center;"><b> EDIT ITEM </b></h3>
+				<h3 class="mb-5 header_text"><b> EDIT ITEM </b></h3>
 				<form action="" method="post">
 
 					{% for field in form %}
@@ -41,7 +41,7 @@
 					</div>
 
 					<div>
-						{% set link = url_for('admin.index') %}
+						{% set link = url_for('invoice.index') %}
 						<a class="btn" href="{{link}}" style="width: 100%; background-color: #eee"> Back </a>
 					</div>
 

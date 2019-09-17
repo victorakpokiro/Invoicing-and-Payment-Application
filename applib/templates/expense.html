@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block in_style %}
+	
+
+{% endblock %}
+
+{% block main %}
+
+<div class="col-md-12">
+	<div>
+		<h3 class="mb-5 header_text">
+			<b> EXPENSE TRACKING </b>
+		</h3>
+	</div> 
+	<div class="text-right space_between">
+		<a class="btn btn-success" href="{{url_for('expense.add')}}"> <i class="fa fa-plus"></i> &nbsp; Add </a>
+	</div>
+		
+	<table class="table table-condensed table-striped">
+		<thead>
+		<tr> 
+			<th> Date </th>
+			<th> Title </th>
+			<th> Description </th>
+			<th> Status </th>
+			<th> Requested By </th>			
+		</tr>
+		</thead>
+		<tbody>
+		{% for item in data %}
+			<tr>
+				<td> {{ date_format(item.date_created) }} </td>
+				<td> <a href="{{url_for('expense.edit', exp_id=item.id)}}"> 
+						{{ item.title | title }} </a>  
+				</td>
+				<td> {{ item.desc | truncate(60) }} </td>
+				<td> {{ status_label[item.status] }} </td>
+				<td> {{ item.requested_by }} </td>
+			</tr>			
+		{% else %}
+			<tr>
+				<td colspan="5"> <i> no matching record found... </i></td>
+			</tr>
+		{% endfor %}
+		</tbody>
+
+	</table>
+</div>
+{% endblock %}
+ 

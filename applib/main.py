@@ -12,7 +12,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 from applib.lib import helper  as h 
  
-
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
@@ -36,10 +35,12 @@ login_manager.login_view = 'admin.login'
 
 from applib import model as m 
 from applib.api import InvoiceApi 
+
 import applib.sub_routes.admin as adm
-import applib.sub_routes.add as add
-import applib.sub_routes.edit as edt
-import applib.sub_routes.delete as det
+import applib.sub_routes.client as clt
+import applib.sub_routes.expense as exp  
+import applib.sub_routes.invoice as inv
+import applib.sub_routes.item as itm
 
 api = Api(app)
 
@@ -54,10 +55,14 @@ def load_user(user_id):
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
  
+
 app.register_blueprint(adm.mod)
-app.register_blueprint(add.fah)
-app.register_blueprint(edt.doh)
-app.register_blueprint(det.taf)
+app.register_blueprint(clt.mod)
+app.register_blueprint(exp.mod)
+app.register_blueprint(inv.mod)
+app.register_blueprint(itm.mod)
+
+
 api.add_resource(InvoiceApi, '/invoice/gen', methods=['POST'])
 
  

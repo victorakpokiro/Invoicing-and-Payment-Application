@@ -18,6 +18,7 @@ from flask_login import UserMixin
 import os
 from applib.main import db
 
+import datetime
 
  
 # Base = declarative_base()
@@ -138,11 +139,40 @@ class Client(db.Model):
     invoice = db.relationship('Invoice', backref='client', lazy=True)
  
 
-        
 
+class Expense(db.Model):
 
+    __tablename__ = 'expense_tracking'
 
-
-
-     
+    id = Column(BigInteger, Sequence('expense_traking_id_seq'), primary_key=True)
+    title = Column(String(100))
+    desc = Column(Text)
+    date_created = Column(DateTime, nullable=False, 
+                          default=datetime.datetime.now())
     
+    requested_by = Column(String(100), nullable=False)
+
+    # status =1 for pending, 2 for approved and 3 for declined 
+    status = Column(Integer, nullable=False, default=0)
+    aproved_by = Column(String(100), nullable=False)
+    amount = Column(String(100), nullable=False)
+
+
+def form2model(formobj, model_ins):
+    counter = 0            
+    for key, obj in formobj._fields.items():
+        if hasattr(model_ins, key):
+            setattr(model_ins, key, obj.data)
+            counter += 1 
+
+    assert counter > 0 , "No model instance fields not found."
+     
+def model2form(model_ins, form_ins):
+
+    counter = 0
+    for key, obj in form_ins._fields.items():
+        if hasattr(model_ins, key):
+            obj.data = getattr(model_ins, key)
+            counter += 1
+
+    assert counter > 0 , "No model instance fields not found."

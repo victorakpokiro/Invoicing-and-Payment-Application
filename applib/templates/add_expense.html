@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% from 'base.html' import form_layout %}
+
+{% block in_style %}
+	
+{% endblock %}
+
+{% block main %}
+	<div class="col-md-6 offset-md-3"> 
+	{% block forms %}
+		
+		<div class="title text-center space_between">
+			<h3> {{title}}  </h3>
+		</div>
+		
+		<div>
+			
+		<form action="" method='post'>			
+			{{ form_layout(form) }}
+			
+			<br>
+			<hr>  
+			<div class="row space_top">
+					
+				<div class="col-md-6">
+					<a href="{{url_for('expense.index')}}" class="btn btn-default btn_cl btn-block"> Back </a>
+					
+				</div>
+				<div class="col-md-6">
+					<button type="submit" class="btn btn-success btn-block"> Save </button>					
+				</div>
+			</div>
+			 
+		</form>
+		</div>
+		
+
+	{% endblock %}
+	</div>
+
+{% endblock %}
+
