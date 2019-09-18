@@ -25,7 +25,7 @@
 		{% for item in data %}
 			<tr>
 				<td> {{ date_format(item.date_created) }} </td>
-				<td> <b><a href="{{url_for('client.edit_client', invoice_id=item.id)}}" title="Edit Client"> 
+				<td> <b><a href="{{url_for('client.edit_client', client_id=item.id)}}" title="Edit Client"> 
 						{{ item.name | title }} </a></b> 
 				</td>
 				<td> {{ item.email | truncate(60) }} </td>

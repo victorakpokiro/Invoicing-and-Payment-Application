@@ -9,7 +9,7 @@ from flask import (Blueprint, request, url_for,
 
 from applib.model import db_session
 from applib import model as m 
-from applib.forms import (ItemForm, DiscountFrm)
+from applib.forms import (ItemForm, DiscountFrm, CreateInvoiceForm)
 from applib.lib.helper import get_config 
 
 
@@ -42,11 +42,12 @@ def calc_discount(query_disc_type, query_disc_value, query_sub_total):
 @login_required
 def add_item(invoice_id):
 
+    client_label = { x[0]: x[1] for x in CreateInvoiceForm().client_type.choices}
+
     with m.sql_cursor() as db:
        
-        client_param = db.query(
-                                    m.Invoice.client_type,
-                                    m.Client.name
+        client_param = db.query(m.Invoice.client_type,
+                                m.Client.name
                                 ).join(
                                         m.Client, 
                                         m.Client.id == m.Invoice.client_id 
@@ -55,7 +56,7 @@ def add_item(invoice_id):
                                                 ).first()
 
         form = ItemForm(request.form, client_name=client_param.name, 
-                        client_type=client_param.client_type) 
+                        client_type=client_label[client_param.client_type]) 
 
     if request.method == 'POST' and form.validate():
 

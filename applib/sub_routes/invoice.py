@@ -150,6 +150,9 @@ def index():
 @login_required
 def checkout(invoice_id):
 
+    form = CreateInvoiceForm()
+    currency_label = {x[0]: x[1] for x in form.currency.choices}
+
     with m.sql_cursor() as db:
         
         client_invoice_details = db.query(
@@ -164,7 +167,8 @@ def checkout(invoice_id):
                                             m.Client.post_addr,
                                             m.Client.name,
                                             m.Client.email,
-                                            m.Client.phone
+                                            m.Client.phone,
+                                            m.Client.id.label('client_id')
                                         ).join(
                                                 m.Client,
                                                 m.Client.id == m.Invoice.client_id
@@ -191,7 +195,7 @@ def checkout(invoice_id):
                     'disc_type': client_invoice_details.disc_type,
                     'email': client_invoice_details.email,
                     'phone': client_invoice_details.phone,
-                    'currency': client_invoice_details.currency
+                    'currency': currency_label[client_invoice_details.currency]
                 }
 
         data['cur_fmt'] = comma_separation
@@ -253,7 +257,7 @@ def client_invoice():
             invoice = m.Invoice()
             m.form2model(form, invoice)
             invoice.date_value = datetime.datetime.now()
-            invoice.invoice_due = datetime.date.now()
+            invoice.invoice_due = datetime.datetime.now()
             db.add(invoice)
             db.flush()
             invoice.invoice_no = 'INV-%d' %invoice.inv_id

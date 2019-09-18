@@ -1,54 +1,50 @@
 {% extends 'base.html' %}
 {% from "base.html" import form_layout %}
 
-{% block main %}
-
-	<style>
-
-		input {
+{% block in_style %}
+	input {
 			margin-bottom: 2%;
 		}
 
-		button {
-			float: left;
-			margin-top: 1%;
-			width: 100px;
-			height: 40px;
-		}
+	button {
+		float: left;
+		margin-top: 1%;
+		width: 100px;
+		height: 40px;
+	}
 
-		#form_title{
-			text-align: center;
-		}
+	#form_title{
+		text-align: center;
+	}
+		
+{% endblock %}
 
-	</style>
-	<div class="container" style="margin-top: 5%">
 
-		<div class="row">
-
-			<div class="col-md-6 offset-md-3">
-				<h3 class="mb-5 header_text"><b> CREATE CLIENT </b></h3>
-				<form action="" method="post">
-					<div>
-						{{form_layout(form)}} 
-					</div> <br>
-					<hr class="space_top">
-					<div class="row">
-						<div class="col-md-6">	
-							{% set link = url_for('client.client_list')%}
-						 	<a href="{{link}}" class="btn btn-default btn_cl btn-block"> Back </a>	
-						</div>
-						<div class="col-md-6">
-							<button type="submit" class="btn btn-success btn-block">Submit</button>
-						</div>
-					</div>
-
-				</form>
-
+{% block main %}
+ 
+ 	 
+	<div class="col-md-6 offset-md-3">
+		<h3 class="mb-5 header_text"><b> CREATE CLIENT </b></h3>
+		<form action="" method="post">
+			<div>
+				{{form_layout(form)}} 
+			</div> <br>
+			<hr class="space_top">
+			<div class="row">
+				<div class="col-md-6">	
+					{% set link = url_for('client.client_list')%}
+				 	<a href="{{link}}" class="btn btn-default btn_cl btn-block"> Back </a>	
+				</div>
+				<div class="col-md-6">
+					<button type="submit" class="btn btn-success btn-block">Submit</button>
+				</div>
 			</div>
 
-		</div>
+		</form>
 
-	</div>
+	</div> 
+
+
 {% endblock %}
 
 

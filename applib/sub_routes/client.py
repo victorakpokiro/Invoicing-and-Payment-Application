@@ -50,49 +50,43 @@ def create_client():
 
     return render_template('create_client.html', form=form)
 
-@mod.route('/edit/<int:invoice_id>', methods=['POST', 'GET'])
+@mod.route('/edit/<int:client_id>', methods=['POST', 'GET'])
 @login_required
-def edit_client(invoice_id):
-
-    with m.sql_cursor() as db:
-        param = {'id': invoice_id}
+def edit_client(client_id):
 
         # select query with WHERE request
-        resp = db.query(
-                            m.Client.email,
-                            m.Client.name,
-                            m.Client.phone,
-                            m.Client.address,
-                            m.Client.post_addr
-                        ).filter_by(**param)
+        # resp = db.query(
+        #                     m.Client.email,
+        #                     m.Client.name,
+        #                     m.Client.phone,
+        #                     m.Client.address,
+        #                     m.Client.post_addr
+        #                 ).filter_by(**param).first()
 
-        temp_resp = resp.first()
+        # temp_resp = resp
 
-        form = CreateClientForm()
-        form.name.data = temp_resp.name
-        form.address.data = temp_resp.address
-        form.email.data = temp_resp.email 
-        form.phone.data = temp_resp.phone
-        form.post_addr.data = temp_resp.post_addr
+    form = CreateClientForm(request.form)
+        # form.name.data = temp_resp.name
+        # form.address.data = temp_resp.address
+        # form.email.data = temp_resp.email 
+        # form.phone.data = temp_resp.phone
+        # form.post_addr.data = temp_resp.post_addr
 
-        if request.method == 'POST':
+    if request.method == 'POST' and form.validate(): 
+        
+        with m.sql_cursor() as db:
+            qry = db.query(m.Client).get(client_id)
+            m.form2model(form, qry)
+            db.add(qry)
 
-            form = CreateClientForm(request.form)
+        return redirect(url_for('client.client_list')) 
+    
 
-            if form.validate():
+    # when the method is a get 
+    with m.sql_cursor() as db:
+        qry = db.query(m.Client).get(client_id)
+        m.model2form(qry, form)
 
-                resp.update(
-                            {
-                                'name' : form.name.data,
-                                'address' : form.address.data,
-                                'email' : form.email.data,
-                                'phone' : form.phone.data,
-                                'post_addr' : form.post_addr.data                           
-                            })
-               
-
-                return redirect(url_for('invoice.checkout', invoice_id=invoice_id)) 
-                
     return render_template('create_client.html', form=form)
 
 
