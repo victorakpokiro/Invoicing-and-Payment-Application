@@ -31,8 +31,8 @@
 		{% for item in data %}
 			<tr>
 				<td> {{ date_format(item.date_created) }} </td>
-				<td> <a href="{{url_for('expense.edit', exp_id=item.id)}}"> 
-						{{ item.title | title }} </a>  
+				<td> <b><a href="{{url_for('expense.edit', exp_id=item.id)}}" title="Edit Expenditure"> 
+						{{ item.title | title }} </a></b> 
 				</td>
 				<td> {{ item.desc | truncate(60) }} </td>
 				<td> {{ status_label[item.status] }} </td>

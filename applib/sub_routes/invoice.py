@@ -253,6 +253,7 @@ def client_invoice():
             invoice = m.Invoice()
             m.form2model(form, invoice)
             invoice.date_value = datetime.datetime.now()
+            invoice.invoice_due = datetime.date.now()
             db.add(invoice)
             db.flush()
             invoice.invoice_no = 'INV-%d' %invoice.inv_id
