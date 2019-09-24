@@ -96,9 +96,9 @@ class Invoice(db.Model):
     date_value = Column(DateTime())  
     invoice_due = Column(DateTime())
     client_type = Column(Integer, nullable=False)
-    # description = Column(String(350), nullable=True) 
     currency  = Column(Integer, nullable=False) 
     client_id =  db.Column(db.BigInteger, db.ForeignKey('client.id'), nullable=False)
+    payment = db.relationship('Payment', backref='client', lazy=True)
     item = db.relationship('Items', backref='invoice', lazy=True)
 
 
@@ -136,16 +136,16 @@ class Client(db.Model):
     email = Column(String(150), nullable=False) 
     phone = Column(String(20), nullable=False)        
     post_addr = Column(String(20), nullable=False) 
-    date_created= Column(DateTime(), nullable=False)
+    date_created = Column(DateTime(), nullable=False)
     invoice = db.relationship('Invoice', backref='client', lazy=True)
  
 
 
 class Expense(db.Model):
 
-    __tablename__ = 'expense_tracking'
+    __tablename__ = "expense"
 
-    id = Column(BigInteger, Sequence('expense_traking_id_seq'), primary_key=True)
+    id = Column(BigInteger, Sequence('expense_id_seq'), primary_key=True)
     title = Column(String(100))
     desc = Column(Text)
     date_created = Column(DateTime, nullable=False, 
@@ -157,6 +157,22 @@ class Expense(db.Model):
     status = Column(Integer, nullable=False, default=0)
     aproved_by = Column(String(100), nullable=False)
     amount = Column(String(100), nullable=False)
+
+
+class Payment(db.Model):
+
+    __tablename__ = 'payment'
+
+    id = Column(BigInteger, Sequence('payment_id_seq'), primary_key=True)
+    client_name = Column(String(150), nullable=False)
+    payment_desc = Column(Text)
+    date_created = Column(DateTime, nullable=False, 
+                          default=datetime.datetime.now())
+    payment_mode = Column(Integer, nullable=False)
+    amount_paid = Column(String(30))
+    balance = Column(String(30))
+    invoice_id = db.Column(db.BigInteger, db.ForeignKey('invoice.inv_id'), nullable=False)
+    status = Column(Integer, nullable=False, default=0)
 
 
 def form2model(formobj, model_ins):

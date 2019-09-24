@@ -41,6 +41,8 @@ import applib.sub_routes.client as clt
 import applib.sub_routes.expense as exp  
 import applib.sub_routes.invoice as inv
 import applib.sub_routes.item as itm
+import applib.sub_routes.payment as pay
+
 
 api = Api(app)
 
@@ -61,6 +63,7 @@ app.register_blueprint(clt.mod)
 app.register_blueprint(exp.mod)
 app.register_blueprint(inv.mod)
 app.register_blueprint(itm.mod)
+app.register_blueprint(pay.mod)
 
 
 api.add_resource(InvoiceApi, '/invoice/gen', methods=['POST'])

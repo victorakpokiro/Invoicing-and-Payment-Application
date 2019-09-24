@@ -3,49 +3,33 @@
 
 {% block main %}
 
-	<div class="container" style="margin-top: 5%">
+	<div class="col-md-6 offset-md-3">
+		<h3 class="mb-5 header_text"><b> CREATE INVOICE </b></h3>
+		<form action="" method="post">
 
-		<div class="row">
+			{{ form_layout(form) }}
+			
+			<br>
+			<hr>
+			<div class="row">
 
-			<div class="col-md-6 offset-md-3">
-				<h3 class="mb-5 header_text"><b> CREATE INVOICE </b></h3>
-				<form action="" method="post">
-
-					{{ form_layout(form) }}
+				
+				<div class="col-md-6">
 					
-					<br>
-					<hr>
-					<div class="row">
+					{% set link = url_for('invoice.index') %}
+					<a href="{{link}}" class="btn btn-default btn_cl btn-block"> Back </a>	
+				</div>
+				<div class="col-md-6">
+					<button type="submit" class="btn btn-success btn-block" style="width: 100%; margin-bottom: 7px; margin-top: 5px"> Add Invoice </button>
+				</div>
 
-						
-						<div class="col-md-6">
-							
-							{% set link = url_for('invoice.index') %}
-							<a href="{{link}}" class="btn btn-default btn_cl btn-block"> Back </a>	
-						</div>
-						<div class="col-md-6">
-							<button type="submit" class="btn btn-success btn-block" style="width: 100%; margin-bottom: 7px; margin-top: 5px"> Add Invoice </button>
-						</div>
+			</div>
 
-					</div>
+		</form>
 
-				</form>
+	</div> 
 
-			</div> 
 
-		</div>
-
-	</div>
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.9/css/select2.min.css" rel="stylesheet"/>
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.9/js/select2.min.js"></script>
 
 	<script type="text/javascript">
 		$(".js-single").select2({

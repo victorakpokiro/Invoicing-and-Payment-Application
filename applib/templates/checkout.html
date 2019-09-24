@@ -20,10 +20,11 @@
 		<br><br>
 		<p>
 			<b>Invoice: {{invoice_details.inv_id}}	
-				<a 	href="{{url_for('invoice.receipt', 										invoice_id=invoice_details.inv_id)}}" 
+				<a 	href="{{url_for('payment.add', 										invoice_name=invoice_details.name,
+						invoice_id=invoice_details.inv_id)}}" 
 					class="fas fa-receipt" 
 					style="float: right; background-color: #eee"> 
-					Convert to Receipt 
+					Proceed to Payment 
 				</a>
 			</b>
 		</p>

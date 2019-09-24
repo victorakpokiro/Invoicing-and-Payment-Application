@@ -51,7 +51,7 @@ def add():
         return redirect(url_for("expense.index", 
                         msg="new Expense added, waiting for approval."))
 
-    return render_template("add_expense.html", title="Add Expense", form=form)
+    return render_template("add_expense.html", form=form)
 
 
 

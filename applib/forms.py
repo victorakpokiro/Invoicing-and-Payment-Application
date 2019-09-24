@@ -128,8 +128,7 @@ class DiscountFrm(Form):
 
     new_total = IntegerField('New Total :', 
                              render_kw={"class_": "form-control", 
-                                     "readonly": "readonly"
-                                    })
+                                        "readonly": "readonly"})
 
 
 class CreateClientForm(Form):
@@ -223,7 +222,43 @@ class ExpenseForm(Form):
     aproved_by = StringField("Approved By", render_kw={"class_": "form-control"})
     
      
- 
+
+class PaymentForm(Form):
+
+    client_name = StringField("Client Name", [input_required()],                            
+                                render_kw={"class_": "js-single",
+                                           "class_": "form-control",
+                                           "style": "margin-bottom : 10px"})
+
+    payment_desc = TextAreaField('Description :', [input_required()], 
+                                render_kw={"class_": "form-control", 
+                                            "autocomplete": "new-password"})
+
+    # date_paid = DateTimeField("Date of Payment", [input_required()],
+    #                             render_kw={"class_":"form-control",
+    #                                        "autocomplete": "new-password"})
+
+    payment_mode = SelectField("Mode Of Payment", [input_required()], 
+                                coerce=int,
+                                choices=[(0, "Select a Mode..."), 
+                                        (1, "Cash"), (2, "Bank Transfer"),
+                                        (3, "Online Merchant"), (4, "Cheque")],
+                                render_kw={"class_": "form-control"})
+
+    amount_paid = IntegerField("Amount Paid", 
+                                render_kw={"class_": "form-control",
+                                           "autocomplete": "new-password"})
+
+    balance = IntegerField("Balance", 
+                                render_kw={"class_": "form-control",
+                                           "autocomplete": "new-password"})
+
+    status = SelectField("Status", [input_required()], 
+                                coerce=int, 
+                                choices=[(1, "Complete"), (2, "Partial")], 
+                                render_kw={"class_": "form-control"})
+        
+
 class LoginForm(Form):
 
     usr_name = StringField("Username", [input_required()], 
