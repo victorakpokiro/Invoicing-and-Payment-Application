@@ -3,9 +3,10 @@ from configobj import ConfigObj
 
 from passlib.hash import pbkdf2_sha256
 
-from flask import session 
+from flask import session, url_for 
 import datetime
- 
+import urllib 
+import base64
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -144,3 +145,85 @@ def date_format(date_obj, strft='%H: %M: %S'):
     return retv
 
 
+def encode_param(**kwargs):        
+    tmp = urllib.parse.urlencode(kwargs)
+    params = base64.b64encode(tmp.encode('utf-8')).decode('utf-8')
+
+    return params
+
+
+def decode_param(value): 
+
+    if isinstance(value, str):
+        value = value.encode("utf-8")
+
+    ret_val = base64.b64decode(value)
+    ret_val = ret_val.decode("utf-8")
+
+    out = {} 
+
+    for x in ret_val.split("&"):
+        key,val = x.split("=")
+        out[key] = urllib.parse.unquote(val) 
+
+    return out
+
+
+import email, smtplib, ssl
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+
+def send_email(filename, receiver_email, msg_subject, 
+               email_body, email_filename='Invoice'):
+    
+    email_params = get_config('email')
+
+    if email_params['live'] == '1':
+
+        body = email_body
+        port = email_params['ssl']
+        smtp_server =  email_params['smtp']
+        password = email_params['passwd']
+        sender_email = email_params['sender']
+        message = MIMEMultipart()
+        message["Subject"] = msg_subject
+        message["From"] = email_params['sender']
+        message["To"] = receiver_email
+
+        message.attach(MIMEText(body, "html"))  #Add body to Email
+        # filename = pdf_output  # In same directory as script
+
+        if filename:
+
+            with open(filename, "rb") as attachment:  # Open PDF file in readable binary mode
+                part = MIMEBase("application", "octet-stream")   # Add file as application/octet-stream
+                part.set_payload(attachment.read())  # Email client can usually download this automatically as attachment
+
+            encoders.encode_base64(part)  # Encode file in ASCII characters to send by email 
+
+            part.add_header(
+                "Content-Disposition",
+                "attachment; filename={}.{}".format(email_filename, 
+                                                    datetime.datetime.now().strftime("%b.%m.%Y.%S"))
+            )
+            
+            message.attach(part)   
+        
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+            server.login(sender_email, password)
+            server.sendmail(
+                sender_email, receiver_email, message.as_string()
+                )
+
+
+def set_email_read_feedback(**kwargs):
+
+    variables = encode_param(**kwargs)
+    link = url_for("admin.report_email_receipt", 
+            ref=variables, 
+            _external=True)
+    return link

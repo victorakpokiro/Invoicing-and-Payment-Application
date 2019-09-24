@@ -12,7 +12,7 @@ from applib.forms import LoginForm
 
 from applib.model import db_session
 from applib import model as m 
-from applib.lib.helper import get_config 
+from applib.lib.helper import get_config, decode_param, send_email
 
 # from applib.main import login_manager
 
@@ -76,35 +76,43 @@ def logout_app():
 @mod.route("/email_receipt")
 def report_email_receipt():
 
+    import json 
+
     """
         ref contains the following values 
-            ref_id=12
-            email_type='invoice | receipt | campaign | reminders'            
+            reference=12
+            email_type='invoice | receipt | campaign | reminders'  
+            email_title='the subject of the email that was sent' 
+            email_body="thebodyof themail"         
     """ 
     ref = request.args.get("ref")
 
-    if not ref:
-        return ""
+    if ref:        
+        values = decode_param(ref)
+        
+        with m.sql_cursor() as db:
+            qry = db.query(m.EmailReceipt).filter_by(ref=ref)
 
-    ref_decoded = base64.b64decode(ref)
-    
-    values = urllib.parse.parse_qs(ref_decoded)
+            if qry.first():
+                qry.update({"counter": qry.first().counter + 1,
+                            "last_received": datetime.datetime.now()
+                            })                               
 
-    if values['email_type'] == 'invoice':
-        pass 
 
-        # query the invoice table and get the email parameters 
+            else:
+                em = m.EmailReceipt()
+                em.ref = ref 
+                em.counter = 1 
+                em.last_received = datetime.datetime.now()
+                em.body = json.dumps(values)
+                db.add(em)
 
-    elif values['email_type'] == "receipt":
-        pass 
+                
+                dt = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
+                body = render_template('email_receipt.html', date_time=dt, **values)
+                send_email(None, "support@ecardex.com", "Read Confirmation", body)
 
-        # query the receipt / payment table and get the email parameters 
-
-    elif values['email_type'] == "others":
-        pass
-
-        # set the values and email the content here 
-
+    return "OK 200!"
 
     # send out a confirmation email to support@ecardex.com 
 

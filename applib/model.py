@@ -175,6 +175,19 @@ class Payment(db.Model):
     status = Column(Integer, nullable=False, default=0)
 
 
+class EmailReceipt(db.Model):
+
+    __tablename__ = 'email_receipt_count'
+
+    id = Column(BigInteger, Sequence('email_receipt_id_seq'), primary_key=True)
+    ref = Column(String(240), nullable=False)
+    counter = Column(BigInteger, nullable=False)
+    last_received = Column(DateTime, nullable=False)
+    body = Column(String(240))
+
+
+
+
 def form2model(formobj, model_ins):
     counter = 0            
     for key, obj in formobj._fields.items():

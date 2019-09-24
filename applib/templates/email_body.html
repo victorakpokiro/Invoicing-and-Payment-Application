@@ -14,6 +14,8 @@
                <tbody>
                   <tr>
                      <td align="center" valign="top">
+						
+						{% block header %}
                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#ffffff;border-bottom:0px solid #cccccc;border-collapse:collapse">
                            <tbody>
                               <tr>
@@ -23,10 +25,13 @@
                               </tr>
                            </tbody>
                         </table>
+                        {% endblock %}
+
                      </td>
                   </tr>
                   <tr>
                      <td align="center" valign="top">
+						{% block logo %}
                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#363B4D;border-top:0px solid #ffffff;border-collapse:collapse">
                            <tbody>
                               <tr>
@@ -39,56 +44,67 @@
                               </tr>
                            </tbody>
                         </table>
+                     	{% endblock %}
+
                      </td>
                   </tr>
                   <tr>
                      <td align="center" valign="top">
+                     	
                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#ffffff;border-top:0px solid #ffffff;border-bottom:0px solid #cccccc;border-collapse:collapse">
                            <tbody>
                               <tr>
                                  <td valign="top" style="color:#505050;font-family:Helvetica;font-size:14px;line-height:150%;padding-top:20px;padding-right:20px;padding-bottom:20px;padding-left:20px;text-align:left">
-                                    <p>Hi {{name}}, <br />
-<br />
-A new invoice has been generated for you by Ecardex Ventures. Here's a quick summary:<br />
-<br />
+                                	{% block body %}    
+	
+	                                    <p>Hi {{name}}, <br />
+										<br />
+										A new invoice has been generated for you by Ecardex Ventures. Here's a quick summary:<br />
+										<br />
 
-{% for x in items %}
+										{% for x in items %}
 
-{{ x.item_desc | title }}  :  Amount {{ cur_fmt(x.amount)}} <br/>
+										{{ x.item_desc | title }}  :  Amount {{ cur_fmt(x.amount)}} <br/>
 
-{% endfor %}
-
-
-<br />
-
-{% if discount %}
-Discount Applied :  {{ cur_fmt(discount) }}
-{% endif %}
-
-<br />
-
-Total Amount:   <b> {{ cur_fmt(total) }} {{ currency }} </b>  <br />
+										{% endfor %}
 
 
-<br />
+										<br />
+
+										{% if discount %}
+										Discount Applied :  {{ cur_fmt(discount) }}
+										{% endif %}
+
+										<br />
+
+										Total Amount:   <b> {{ cur_fmt(total) }} {{ currency }} </b>  <br />
 
 
-A PDF copy of it has been added as an attachment <br/>
-<br />
+										<br />
 
 
-Best regards,<br />
-Ecardex Ventures
+										A PDF copy of it has been added as an attachment <br/>
+										<br />
+
+
+										Best regards,<br />
+										Ecardex Ventures
 
                                     </p>
+                                    {% endblock %}
                                  </td>
                               </tr>
                            </tbody>
                         </table>
+
+                       
+
                      </td>
                   </tr>
                   <tr>
                      <td align="center" valign="top">
+                     	{% block footer %}
+
                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#eeeeee;border-top:0px solid #ffffff;border-collapse:collapse">
                            <tbody>
                               <tr>
@@ -103,6 +119,10 @@ Ecardex Ventures
                               </tr>
                            </tbody>
                         </table>
+						<img src="{{status_link or ''}}" height="1" width="1">
+
+                        {% endblock %}
+
                      </td>
                   </tr>
                </tbody>

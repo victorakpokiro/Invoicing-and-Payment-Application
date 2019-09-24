@@ -8,14 +8,7 @@ import datetime
 
 from flask import (Blueprint, request, url_for, 
                    render_template, redirect, session, flash)
-
-
-import email, smtplib, ssl
-from email import encoders
-from email.mime.base import MIMEBase
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
+ 
 
 from jinja2 import Template
 from jinja2 import Environment, PackageLoader, FileSystemLoader
@@ -25,7 +18,7 @@ import random
 from applib.model import db_session
 from applib import model as m 
 from applib.forms import CreateInvoiceForm
-from applib.lib.helper import get_config 
+from applib.lib.helper import get_config, send_email, set_email_read_feedback
 
 
 from flask_login import login_required
@@ -50,55 +43,20 @@ def generate_pdf(_template, args, kwargs):
 
     template = env.get_template(_template)
     _template = template.render(posts=args, **kwargs)
-
-    template1 = env.get_template('email_body.html')
-    _template1 = template1.render(items=args, **kwargs)
-
+    
     pdf_output = 'invoice_%d.pdf'%random.randrange(10000)  #when rendering with flask this library requires a co plte directory for the style and image file
     pdfkit.from_string(_template, pdf_output, {'orientation': 'Portrait'})
 
     message_subject = kwargs['type']+" Generated for "+ kwargs['name'].upper()
 
+    _link = set_email_read_feedback(email_receiver=kwargs['email'], 
+                                    email_title=message_subject)
+    template1 = env.get_template('email_body.html')
+    _template1 = template1.render(items=args, status_link=_link, **kwargs)
+
     send_email(pdf_output, kwargs['email'], message_subject, _template1)
 
-def send_email(filename, receiver_email, msg_subject, email_body):
-    
-    email_params = get_config('email')
 
-    if email_params['live'] == '1':
-
-        body = email_body
-        port = email_params['ssl']
-        smtp_server =  email_params['smtp']
-        password = email_params['passwd']
-        sender_email = email_params['sender']
-        message = MIMEMultipart()
-        message["Subject"] = msg_subject
-        message["From"] = email_params['sender']
-        message["To"] = receiver_email
-
-        message.attach(MIMEText(body, "html"))  #Add body to Email
-        # filename = pdf_output  # In same directory as script
-
-        with open(filename, "rb") as attachment:  # Open PDF file in readable binary mode
-            part = MIMEBase("application", "octet-stream")   # Add file as application/octet-stream
-            part.set_payload(attachment.read())  # Email client can usually download this automatically as attachment
-
-        encoders.encode_base64(part)  # Encode file in ASCII characters to send by email 
-
-        part.add_header(
-            "Content-Disposition",
-            "attachment; filename=Invoice.{}".format(datetime.datetime.now().strftime("%Y.%m.%d")),  # Add name/header to attachment part
-        )
-        
-        message.attach(part)  # Add attachment to message 
-        
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-            server.login(sender_email, password)
-            server.sendmail(
-                sender_email, receiver_email, message.as_string() # convert body and attachment messages to string
-                )
 
 def calc_discount(query_disc_type, query_disc_value, query_sub_total):
     

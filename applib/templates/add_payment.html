@@ -40,30 +40,6 @@
 
 	<div class="col-md-6">
 		
-		<div>
-
-			<table class="table table-condensed table-striped">
-				<thead>
-					<th> Item </th>
-					<th> Amount </th>
-				</thead>
-				<tbody>
-				{% for item in item_details %} 
-					<tr>
-						<td> {{item.item_desc}} </td>
-						<td> {{kwargs['cur_fmt'](item.amount)}} </td>
-					</tr>
-				{% else %}
-					<tr>
-						<td colspan="2"> <i> no records found... </i> </td>
-					</tr>
-				{% endfor %}
-				</tbody>
-			</table>
-			
-			<h3 style="text-align: center;margin-top: 15%;font-weight: bold;">
-				Total : {{ kwargs['cur_fmt'](total) }} {{ kwargs['currency'] }} 
-			</h3>
 
 		</div>
 		 
