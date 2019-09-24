@@ -18,6 +18,9 @@ from applib.lib.helper import get_config
 
 from flask_login import login_user, login_required, logout_user
 
+import urllib
+import base64
+
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
@@ -67,6 +70,47 @@ def login():
 def logout_app():
     logout_user()
     return redirect(url_for('admin.login'))
+
+
+
+@mod.route("/email_receipt")
+def report_email_receipt():
+
+    """
+        ref contains the following values 
+            ref_id=12
+            email_type='invoice | receipt | campaign | reminders'            
+    """ 
+    ref = request.args.get("ref")
+
+    if not ref:
+        return ""
+
+    ref_decoded = base64.b64decode(ref)
+    
+    values = urllib.parse.parse_qs(ref_decoded)
+
+    if values['email_type'] == 'invoice':
+        pass 
+
+        # query the invoice table and get the email parameters 
+
+    elif values['email_type'] == "receipt":
+        pass 
+
+        # query the receipt / payment table and get the email parameters 
+
+    elif values['email_type'] == "others":
+        pass
+
+        # set the values and email the content here 
+
+
+    # send out a confirmation email to support@ecardex.com 
+
+
+
+
 
 
 

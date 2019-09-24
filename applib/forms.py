@@ -228,9 +228,10 @@ class PaymentForm(Form):
     client_name = StringField("Client Name", [input_required()],                            
                                 render_kw={"class_": "js-single",
                                            "class_": "form-control",
+                                           "readonly": "readonly",
                                            "style": "margin-bottom : 10px"})
 
-    payment_desc = TextAreaField('Description :', [input_required()], 
+    payment_desc = TextAreaField('Description', [input_required()], 
                                 render_kw={"class_": "form-control", 
                                             "autocomplete": "new-password"})
 

@@ -7,36 +7,56 @@
 {% endblock %}
 
 {% block main %}
-	<div class="col-md-6 offset-md-3"> 
+	<div class="col-md-6"> 
+	
 	{% block forms %}
 		
 		<div class="title text-center space_between">
-			<h3><b> ADD PAYMENT DETAILS </b></h3>
-		</div>
-		
+			<h3> {{title}} </h3>
+		</div> 
 		<div>
 			
 		<form action="" method='post'>			
-			{{ form_layout(form) }}
-			
+			{{ form_layout(form) }}			
 			<br>
 			<hr>  
 			<div class="row space_top">
 					
 				<div class="col-md-6">
-					<a href="{{url_for('payment.index')}}" class="btn btn-default btn_cl btn-block"> Back </a>
-					
+					<a href="{{url_for('payment.index')}}" class="btn btn-default btn_cl btn-block"> Back </a>					
 				</div>
 				<div class="col-md-6">
 					<button type="submit" class="btn btn-success btn-block"> Save </button>					
 				</div>
-			</div>
-			 
+			</div>			 
 		</form>
 		</div>
 		
-
 	{% endblock %}
+	
+	</div>
+
+	<div class="col-md-6">
+		
+		<div>
+			
+		
+		<table class="table table-condensed table-striped">
+			<thead>
+				<th> Item </th> <th> Amount </th>
+			</thead>
+			<tbody> 
+
+				<tr>
+					<td> Python Class </td> <td> 70000 </td>
+				</tr>
+			</tbody>
+
+		</table>
+		
+		<h4> Total :  10000 NGN  </h4>
+		</div>
+		 
 	</div>
 
 {% endblock %}

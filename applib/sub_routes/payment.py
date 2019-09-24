@@ -72,7 +72,9 @@ def add(invoice_name, invoice_id):
 			msg = "Payment has being Added"
 			return redirect(url_for('payment.index', msg=msg))
 
-	return render_template('add_expense.html', form=form)
+	return render_template('add_payment.html', 
+						   form=form, 
+						   title="Add Payment")
 	
 
 
@@ -90,10 +92,8 @@ def edit(pay_id):
 		return redirect(url_for("payment.index", msg='Paymemt updated successfully.'))
 			
 	with m.sql_cursor() as db:
-		# qry = db.query(m.Client).order_by(m.Client.id.desc()).all()     
-		# form.invoice_id.choices.extend([(g.id, g.name) for g in qry])
-		pay_data = db.query(m.Payment,
-							m.Client.name.label('invoice_id'),
+		pay_data = db.query(m.Payment.id,
+							m.Client.name.label('client_name'),
 							m.Payment.payment_desc,
 							m.Payment.client_name,
 							m.Payment.payment_mode,
@@ -105,9 +105,10 @@ def edit(pay_id):
 							m.Invoice.inv_id == m.Payment.invoice_id
 							).join(
 							m.Client, m.Client.id == m.Invoice.client_id
-							).filter_by(id=pay_id).first()
+							).filter(m.Payment.id == pay_id).first()
 
 		m.model2form(pay_data, form)
 
-	return render_template("add_expense.html", form=form)
+	return render_template("add_payment.html", 
+							form=form, title="Edit Payment")
 
