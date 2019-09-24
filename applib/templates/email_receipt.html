@@ -1,0 +1,21 @@
+{% extends "email_body.html" %}
+
+{% block header %}{% endblock %}
+{% block logo %} {% endblock %}
+
+{% block body %}
+<p>
+	
+<h3> Email Read Confirmation </h3> <br/>
+
+Email Receiver : {{ email_receiver }} <br/>
+Email Title / Subject : {{ email_title }} <br/>  <br/>
+
+Date time {{ date_time }}
+
+</p>
+
+{% endblock %}
+
+{% block footer %}  {% endblock %}
+
