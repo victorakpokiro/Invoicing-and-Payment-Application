@@ -24,7 +24,8 @@
 						<th colspan="2"> Total </th>
 					</tr>
 				</thead>
-				<tbody> 
+				<tbody>
+					{% set payment_status = {1: 'P', 2: 'P'} %}
 					{% for val in value %}
 						<tr>
 
@@ -33,10 +34,18 @@
 									)}} 
 							</td>
 							<td> 
+								{% if val.status %}
 								<a href="{{url_for('invoice.checkout', 			invoice_id=val.inv_id)}}" 
 								title="View Invoice Details" 
-								style="color: green"><b>{{ val.invoice_no }}</b> 
+								style="color: green">
+								<b>
+								{{ val.invoice_no }} 
+								<label class="badge badge-info">
+									{{ payment_status[val.status] }}  
+								</label>
+								</b> 
 								</a> 
+								{% endif %}
 							</td>
 							<td> {{ val.name | title }} </td>
 							<td> {{ val.email }} </td>

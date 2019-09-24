@@ -3,13 +3,30 @@ from flask import (Blueprint, request, url_for,
 				   render_template, redirect, session, flash)
 
 import applib.model as m
-from applib.forms import PaymentForm
+from applib.forms import PaymentForm, CreateInvoiceForm
 from applib.lib import helper as h 
 from flask_login import login_required
 import datetime 
 
 
 mod = Blueprint('payment', __name__, url_prefix='/admin/payment')
+
+
+def calc_discount(query_disc_type, query_disc_value, query_sub_total):
+	
+	if query_disc_type == 'fixed':
+		return query_disc_value
+	elif query_disc_type == 'percent':
+		return int(query_disc_value)/100.0 * int(query_sub_total)
+
+	return 0
+
+
+def comma_separation(amt):
+	_len = len(str(amt))
+	fmt = '{:' + str(_len) + ',.2f}' 
+	return fmt.format(float(amt))
+
 
 
 @mod.route("/")
@@ -51,20 +68,40 @@ def index():
 @mod.route("/add/<int:invoice_id>/<invoice_name>", methods=["POST", "GET"])
 @login_required
 def add(invoice_name, invoice_id):
-	form = PaymentForm(request.form, client_name=invoice_name) 
-	# form.invoice_id.choices = [(0, "Select a User...")]
+	form = PaymentForm(request.form, client_name=invoice_name)
+	formd = CreateInvoiceForm()
+	currency_label = {x[0]: x[1] for x in formd.currency.choices} 
 	
 	with m.sql_cursor() as db:
-		# qry = db.query(m.Client).order_by(m.Client.id.desc()).all()     
-		# form.invoice_id.choices.extend([(g.id, g.name) for g in qry])
-		# import pudb
-		# pudb.set_trace()
+		item_details = db.query(m.Items.amount, m.Items.item_desc).filter_by(
+														invoice_id=invoice_id
+														).all()
+		discount_query = db.query(m.Invoice.disc_type, 
+								  m.Invoice.disc_value,
+								  m.Invoice.currency).filter_by(
+																inv_id=invoice_id
+																).first()
+
+		data = {}
+		
+		total = 0
+		_amount = 0
+		for x in item_details:
+			_amount += float(x.amount) 
+
+		discount = calc_discount(discount_query.disc_type, 
+								 discount_query.disc_value, _amount)
+		
+		total = _amount - float(discount)
+
+		data['cur_fmt'] = comma_separation
+		data['currency'] = currency_label[discount_query.currency]    
+	
 
 		if request.method == 'POST' and form.validate():
 			pay_md = m.Payment()
 			m.form2model(form, pay_md)
 			pay_md.invoice_id = invoice_id
-			# pay_md.name = invoice_name
 			pay_md.date_created = datetime.datetime.now()
 			db.add(pay_md)
 			# db.flush()
@@ -74,7 +111,10 @@ def add(invoice_name, invoice_id):
 
 	return render_template('add_payment.html', 
 						   form=form, 
-						   title="Add Payment")
+						   title="Add Payment",
+						   total=total,
+						   item_details=item_details,
+						   kwargs=data)
 	
 
 

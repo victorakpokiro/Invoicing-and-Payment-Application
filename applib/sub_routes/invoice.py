@@ -132,12 +132,16 @@ def index():
                         m.Client.name, m.Invoice.date_value,                      
                         sub.c.sub_total,
                         sub.c.invoice_id,
+                        m.Payment.status
                       ).outerjoin(sub, sub.c.invoice_id == m.Invoice.inv_id
-                                 ).filter(
-                                            m.Invoice.client_id==m.Client.id
-                                          ).order_by(
+                        ).outerjoin(m.Payment, 
+                                    m.Payment.invoice_id == m.Invoice.inv_id
+                                    ).filter(
+                                             m.Invoice.client_id == m.Client.id
+                                            ).order_by(
                                                         m.Invoice.inv_id.desc()
-                                                     ).all()
+                                                       ).all()
+
                                   
     msg = request.args.get('msg')
     if msg:

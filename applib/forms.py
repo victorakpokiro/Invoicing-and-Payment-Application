@@ -252,6 +252,7 @@ class PaymentForm(Form):
 
     balance = IntegerField("Balance", 
                                 render_kw={"class_": "form-control",
+                                           "readonly": "readonly",
                                            "autocomplete": "new-password"})
 
     status = SelectField("Status", [input_required()], 

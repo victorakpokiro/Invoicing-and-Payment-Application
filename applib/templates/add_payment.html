@@ -3,7 +3,9 @@
 {% from 'base.html' import form_layout %}
 
 {% block in_style %}
-	
+	table{
+		margin-top: 15%;
+	}
 {% endblock %}
 
 {% block main %}
@@ -39,25 +41,49 @@
 	<div class="col-md-6">
 		
 		<div>
+
+			<table class="table table-condensed table-striped">
+				<thead>
+					<th> Item </th>
+					<th> Amount </th>
+				</thead>
+				<tbody>
+				{% for item in item_details %} 
+					<tr>
+						<td> {{item.item_desc}} </td>
+						<td> {{kwargs['cur_fmt'](item.amount)}} </td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="2"> <i> no records found... </i> </td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
 			
-		
-		<table class="table table-condensed table-striped">
-			<thead>
-				<th> Item </th> <th> Amount </th>
-			</thead>
-			<tbody> 
+			<h3 style="text-align: center;margin-top: 15%;font-weight: bold;">
+				Total : {{ kwargs['cur_fmt'](total) }} {{ kwargs['currency'] }} 
+			</h3>
 
-				<tr>
-					<td> Python Class </td> <td> 70000 </td>
-				</tr>
-			</tbody>
-
-		</table>
-		
-		<h4> Total :  10000 NGN  </h4>
 		</div>
 		 
 	</div>
+
+{% endblock %}
+
+{% block scripts %}
+	
+	var total = {{total}};
+	var amount_paid = document.getElementById("amount_paid");
+
+	amount_paid.addEventListener("keyup", calculate);
+
+	function calculate(){
+		var displayAmount = 0;
+		
+		displayAmount = total - amount_paid.value;
+		document.getElementById("balance").value = displayAmount;
+	}
 
 {% endblock %}
 
