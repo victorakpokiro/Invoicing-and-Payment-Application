@@ -1,148 +1,187 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<!-- <meta name="viewport" content="width=1024px"> -->
+	<title>Invoice</title>
+	<link rel="icon" href="data:,">
 
-{% block main %}
+	
 
 	<style>
+		body {
+			margin: 0;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+			font-size: 1rem;
+			font-weight: 400;
+			line-height: 1.5;
+			color: #212529;
+			text-align: left;
+			background-color: #fff;
+		}
+
+		.row {
+  			display: -ms-flexbox;
+  			display: flex;
+  			-ms-flex-wrap: wrap;
+  			flex-wrap: wrap;
+  			margin-right: -15px;
+  			margin-left: -15px;
+		}
+
+		.col-md-6 {
+			-ms-flex: 0 0 50%;
+			flex: 0 0 50%;
+			max-width: 50%;
+			position: relative;
+  			width: 100%;
+  			padding-right: 15px;
+  			padding-left: 15px;
+		}
 			
-			
-			body {
-					  margin: 0;
-					  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-					  font-size: 1rem;
-					  font-weight: 400;
-					  line-height: 1.5;
-					  color: #212529;
-					  text-align: left;
-					  background-color: #fff;
-				}
-				
-			.container {
-					  width: 100%;
-					  padding-right: 15px;
-					  padding-left: 15px;
-					  margin-right: auto;
-					  margin-left: auto;
-					}
+		.container {
+			width: 100%;
+			padding-right: 20px;
+			padding-left: 20px;
+			margin-right: auto;
+			margin-left: auto;
+		}
 
-			.text-right {
-					 text-align: right;
-				}
+		.text-right {
+			text-align: right;
+		}
 
-			h1{
-					 margin-top: 6%;
-			}
+		.text-center {
+			text-align: center;
+		}
 
-			h5{
-					 margin-top: 0;
-			  		 margin-bottom: 0.5rem;
-			  		 font-size: large;
-			  		 font-weight: 600;
-			}
+		h1{
+			margin-top: 6%;
+		}
 
-			#Right_name{
-				margin-top: 0px;
-			}
+		h5{
+			margin-top: 0;
+	  		margin-bottom: 0.5rem;
+	  		font-size: large;
+	  		font-weight: 600;
+		}
 
-			.summary td {
-					 text-align: right;
-			}
+		#Right_name{
+			margin-top: 0px;
+		}
 
-			/*.page{
-			    	 margin-left: 20%;
-			   	 	 margin-right: 20%;
-			    	 padding-left: 4%;
-			    	 padding-right: 4%
-			}*/
+		.summary td {
+			text-align: right;
+		}
 
-			img{
-				 	 margin-left: 67%;
-				 	 position: relative;
-			     	 top: 2px;
-			     	 height: 150px;
-			} 	
+		img{
+			 margin-left: 67%;
+			 position: relative;
+		     top: 2px;
+		     height: 150px;
+		} 	
 
-			/*#Invoice_and_Image{
-					 display: flex;
-					 flex-direction: row;
-					 position: relative;
-			}*/
+		#Address_and_Numbers{
+			display: flex;
+			flex-direction: row;
+			position: relative;
+			font-size: 16px;
+		}
 
-			#Address_and_Numbers{
-					 display: flex;
-					 flex-direction: row;
-					 position: relative;
-					 font-size: 16px;
-			}
+		#Number_taken_right{
 
-			#Number_taken_right{
+			 padding-left: 285px;
+			 float: right !important;
+		 }
+			 
+		table{
+		 	width: 100%;	
+		 	border-collapse: collapse;
+		 	display: table !important;
+		 	margin-bottom: 1rem;
+		  	background-color: transparent;
+		 }
 
-				 	 padding-left: 285px;
-				 	 float: right !important;
-			 }
-				 
-			table{
-			 		 width: 100%;	
-			 		 border-collapse: collapse;
-			 		 display: table !important;
-			 		 margin-bottom: 1rem;
-			  		 background-color: transparent;
-			 }
+		#Invoice_and_Image table{
+			width: 100%;	
+		 	border-collapse: collapse;
+		 	display: table !important;
+		 	margin-bottom: 1rem;
+		  	background-color: transparent;
+		}
 
-			#Invoice_and_Image table{
-					 width: 100%;	
-			 		 border-collapse: collapse;
-			 		 display: table !important;
-			 		 margin-bottom: 1rem;
-			  		 background-color: transparent;
-			}
+		.table th,
+		.table td {
+			padding: 0.75rem;
+			vertical-align: top;
+			border-top: 1px solid #dee2e6;
+		}
 
-			.table th,
-			.table td {
-					 padding: 0.75rem;
-					 vertical-align: top;
-					 border-top: 1px solid #dee2e6;
-			}
+		.table thead th {
+			vertical-align: bottom;
+			border-bottom: 2px solid #dee2e6;
+		}
 
-			.table thead th {
-					 vertical-align: bottom;
-					 border-bottom: 2px solid #dee2e6;
-			}
+		.table tbody + tbody {
+			border-top: 2px solid #dee2e6;
+		}
 
-			.table tbody + tbody {
-					 border-top: 2px solid #dee2e6;
-			}
+		.table-striped tbody tr:nth-of-type(odd) {
+			background-color: rgba(0, 0, 0, 0.01);
+		}
 
-			.table-striped tbody tr:nth-of-type(odd) {
-					 background-color: rgba(0, 0, 0, 0.01);
-			}
+		#Bottom_table_taken td {
+			padding-right: 30px;
+		    block-size: inherit;
+		    /*font-size: large;*/
+		}
 
-			#Bottom_table_taken td {
-					 padding-right: 30px;
-			    	 block-size: inherit;
-			    	 /*font-size: large;*/
-			}
+		#Top_table_taken{
+			/*font-size: large;*/
+		}
 
-			#Top_table_taken{
-					 /*font-size: large;*/
-			}
+		#footer_div{
+			margin-top: 25%; 
+			padding-top: 10%;
+		}
 
-			footer{
-					 font-size: large;
-			    	 font-weight: 320;
-			}
+		#lower_table{
+			margin-left: 50%;		 
+		}
 
-			#lower_table{
-					 margin-left: 50%;		 
-			}
-						
+		h5{
+			margin-bottom: 0px;
+		}
+		
+		.accnt_name{
+			margin: 0px auto; 
+			font-size: 14px;
+		}	
+
+		#contact{
+			text-align: left; 
+			margin-top: 2px; 
+			font-size: 15px;
+		}
+
+		.footer{ 
+	       position: fixed;     
+	       text-align: left;    
+	       bottom: 0px; 
+	       width: 100%;
+	       /*color: green;*/
+   		}
 
 	</style>
+
+	 
+</head>
+<body>
 	
 	<div class="container">
 			
 		<div class="page">
 			<div>
-				
 				
 				<table>
 					<td><h1 style=> Invoice </h1></td>
@@ -161,14 +200,10 @@
 							<p><b>To</b><br>{{ name | title }} <br> {{ address | title }} <br> {{ post_addr | title }} <br> Nigeria.</p>
 						</td>
 						<td>
-							<br><b>Invoice No.</b><br>
+							<br><b>Payment Ref.</b><br>
 							<p>{{ invoice_no }}</p>
-							<b>Date</b><br>
+							<b>Date Paid</b><br>
 							<p>{{ date_value }}</p>
-							<b>Invoice Due</b><br>
-							<p>{{ invoice_due }}</p>
-							<b>Purchase Order No.</b><br>
-							<p>{{ purchase_order_no }}</p>
 						</td>
 						
 					</tbody>
@@ -177,80 +212,68 @@
 
 				
 				<div id="table" class="table">
-					
-						<table id="Top_table_taken" class="table table-striped">
-							<thead> 
-								<tr>
-									<th scope="col">Description</th>
-									<th scope="col" style="text-align: center;">Quantity</th>
-									<th scope="col" style="text-align: right; padding-right: 18px;">Rate</th>
-									<th scope="col" style="text-align: right; padding-right: 40px;">Amount</th>				
-								</tr>
-							</thead>
-							<tbody> 
-								{% for post in posts %}
-								<tr>
-									<td> {{ post.item_desc | title }} </td>
-									<td style="text-align: center;"> {{ post.qty }} </td>
-									<td style="text-align: right; "> {{ cur_fmt(post.rate) }} </td>
-									<td style="text-align: right; padding-right: 30px;"> {{ cur_fmt(post.amount) }} </td>
-								</tr>
-								{%endfor%}
-							</tbody>
-						</table>
-										
+				<h2 class="text-center" style="font-weight: lighter;"> 
+					Payment Confirmation 
+				</h2>
+					<table id="Top_table_taken" class="table table-striped">
+						<thead> 
+							<tr>
+								<th scope="col">Description</th>
+								<th scope="col" style="text-align: right; padding-right: 40px;">Amount</th>		
+							</tr>
+						</thead>
+						<tbody> 
+							{% for post in posts %}
+							<tr>
+								<td> {{ post.item_desc | title }} </td>
+								<td style="text-align: right; padding-right: 30px;"> {{ cur_fmt(post.amount) }} </td>
+							</tr>
+							{%endfor%}
+						</tbody>
+					</table>
+									
+					<div id="lower_table">
+
+					<table id="Bottom_table_taken" class="table table-hover summary">
+						<tbody>
+							
+							<tr>
+								<th scope="row"> Amount Paid </th>
+								<td> {{ cur_fmt(amount_paid) }} </td>
+							</tr>
+
+							<tr>
+								<th scope="row"> Amount To Balance </th>
+								<td> {{ cur_fmt(amount_balance) or '0.00' }} </td>
+							</tr>
 						
-						<div id="lower_table">
+							<tr>
+								<th scope="row"> Total </th>
+								<td> {{ cur_fmt(total) }} </td>
+							</tr>
+							
+						</tbody>
+					</table> 	
 
-						<table id="Bottom_table_taken" class="table table-hover summary">
-							<tbody>
-								
-								<tr>
-									<th scope="row">Sub Total </th>
-									<td> {{ subtotal }} </td>
-								</tr>
-								
-								<tr>
-									<th scope="row">Discount applied </th>
-									<td> -{{ cur_fmt(discount) }} </td>
-								</tr>
-								
-								<tr>
-									<th scope="row">Total </th>
-									<td> {{ cur_fmt(total) }} </td>
-								</tr>
+					</div>
 
-								<tr>
-									<th scope="row">Paid to Date </th>
-									<td> {{ cur_fmt(paid_to_date) }} </td>
-								</tr>
-
-								<tr style="border-bottom: 2px solid #343a40;">
-									<th>Balance</th>
-									<td> {{ cur_fmt(balance) }} </td>
-								</tr>
-							</tbody>
-						</table> 	
-
-						</div>
 				</div>	
-			</div>
+				
+			</div>	
+
 		</div>
 		<div id="footer_div">
+			<h3 class="text-center" style="font-weight: lighter;"> 
+				Payment Status : {{status}} 
+			</h3>
 			<hr>
 			<footer style="min-height: 40px;">
-							
-				<div style="text-align: left;">
-					<h5><u>Payment Details:</u></h5>
-					<p class="accnt_name">Account Name:<b>Ecardex Ventures</b></p> 
-					<p class="accnt_name">Account Number:<b>0100350532 &nbsp; [Access Bank (Diamond)]</b></p>
-				</div>
-				
 				<p id="contact">
 					support@ecardex.com &nbsp;
 					<i><a href="https://www.ecardex.com" style="color: green">www.ecardex.com</a></i>
 				</p>
 			</footer>
-		</div>		
-	</div>
-{% endblock %}
+		</div>
+	</div>	 
+</body>
+</html>

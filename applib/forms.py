@@ -246,7 +246,8 @@ class PaymentForm(Form):
                                         (3, "Online Merchant"), (4, "Cheque")],
                                 render_kw={"class_": "form-control"})
 
-    amount_paid = IntegerField("Amount Paid", 
+    amount_paid = IntegerField("Amount Paid",
+                                [input_required(), check_sign()], 
                                 render_kw={"class_": "form-control",
                                            "autocomplete": "new-password"})
 
