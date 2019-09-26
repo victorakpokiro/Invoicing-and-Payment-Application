@@ -1,21 +1,45 @@
 {% extends "email_body.html" %}
 
-{% block header %}{% endblock %}
-{% block logo %} {% endblock %}
-
 {% block body %}
-<p>
+
+<p>Hi {{name}}, <br />
+	<br />
+	A new {{type}} has been generated for you by Ecardex Ventures. Here's a quick summary:<br />
+	<br />
+
+	{% for x in items %}
+
+	{{ x.item_desc | title }}  :  Amount {{ cur_fmt(x.amount)}} <br/>
+
+	{% endfor %}
+
+	<hr/> 
+	<br /> 
 	
-<h3> Email Read Confirmation </h3> <br/>
+	
+	Payment decription / amount paid 
+	
+	Amount to Balance 
+	
 
-Email Receiver : {{ email_receiver }} <br/>
-Email Title / Subject : {{ email_title }} <br/>  <br/>
 
-Date time {{ date_time }}
+
+	<br />
+
+	Total Amount:   {{ cur_fmt(total) }} {{ currency }}  <br />
+
+
+	<br />
+
+
+	A PDF copy of it has been added as an attachment <br/>
+	<br />
+
+
+	Best regards,<br />
+	Ecardex Ventures
 
 </p>
 
+
 {% endblock %}
-
-{% block footer %}  {% endblock %}
-

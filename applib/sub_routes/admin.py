@@ -109,7 +109,7 @@ def report_email_receipt():
 
                 
                 dt = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
-                body = render_template('email_receipt.html', date_time=dt, **values)
+                body = render_template('email_status.html', date_time=dt, **values)
                 send_email(None, "support@ecardex.com", "Read Confirmation", body)
 
     return "OK 200!"
