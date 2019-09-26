@@ -47,9 +47,10 @@ def generate_pdf(_template, args, kwargs):
 
 	_link = set_email_read_feedback(email_receiver=kwargs['email'], 
 									email_title=message_subject)
+
 	template1 = env.get_template('email_body.html')
 	_template1 = template1.render(items=args, status_link=_link, **kwargs)
-
+	
 	send_email(pdf_output, kwargs['email'], message_subject, _template1)
 
 
