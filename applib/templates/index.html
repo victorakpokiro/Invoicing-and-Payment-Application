@@ -34,18 +34,19 @@
 									)}} 
 							</td>
 							<td> 
-								{% if val.status %}
+								
 								<a href="{{url_for('invoice.checkout', 			invoice_id=val.inv_id)}}" 
 								title="View Invoice Details" 
 								style="color: green">
 								<b>
 								{{ val.invoice_no }} 
+								{% if val.status %}
 								<label class="badge badge-info">
 									{{ payment_status[val.status] }}  
 								</label>
 								</b> 
-								</a> 
 								{% endif %}
+								</a> 
 							</td>
 							<td> {{ val.name | title }} </td>
 							<td> {{ val.email }} </td>
