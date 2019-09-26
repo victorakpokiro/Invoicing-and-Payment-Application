@@ -5,7 +5,8 @@ from flask import (Blueprint, request, url_for,
 import applib.model as m
 from applib.forms import PaymentForm, CreateInvoiceForm
 from applib.lib import helper as h 
-from applib.lib.helper import get_config, send_email, set_email_read_feedback
+from applib.lib.helper import (get_config, send_email, calc_discount,
+								set_email_read_feedback, generate_pdf, comma_separation)
 from flask_login import login_required
 
 import os
@@ -20,47 +21,6 @@ import random
 
 
 mod = Blueprint('payment', __name__, url_prefix='/admin/payment')
-
-
-def calc_discount(query_disc_type, query_disc_value, query_sub_total):
-	
-	if query_disc_type == 'fixed':
-		return query_disc_value
-	elif query_disc_type == 'percent':
-		return int(query_disc_value)/100.0 * int(query_sub_total)
-
-	return 0
-
-
-
-def generate_pdf(_template, args, kwargs):
-
-	env = Environment(loader=FileSystemLoader('applib/templates/'))
-
-	template = env.get_template(_template)
-	_template = template.render(posts=args, **kwargs)
-	
-	pdf_output = 'invoice_%d.pdf'%random.randrange(10000)  #when rendering with flask this library requires a co plte directory for the style and image file
-	pdfkit.from_string(_template, pdf_output, {'orientation': 'Portrait'})
-
-	message_subject = kwargs['type']+" Generated for "+ kwargs['name'].upper()
-
-	_link = set_email_read_feedback(email_receiver=kwargs['email'], 
-									email_title=message_subject)
-
-	template1 = env.get_template('email_body.html')
-	_template1 = template1.render(items=args, status_link=_link, **kwargs)
-	
-	send_email(pdf_output, kwargs['email'], message_subject, _template1)
-
-
-
-def comma_separation(amt):
-	_len = len(str(amt))
-	fmt = '{:' + str(_len) + ',.2f}' 
-	return fmt.format(float(amt))
-
-
 
 @mod.route("/")
 @login_required
@@ -101,8 +61,8 @@ def index():
 @login_required
 def add(invoice_name, invoice_id):
 	form = PaymentForm(request.form, client_name=invoice_name)
-	formd = CreateInvoiceForm()
-	currency_label = {x[0]: x[1] for x in formd.currency.choices} 
+	form_inv = CreateInvoiceForm()
+	currency_label = {x[0]: x[1] for x in form_inv.currency.choices} 
 	
 	with m.sql_cursor() as db:
 		item_details = db.query(m.Items.amount, m.Items.item_desc).filter_by(
@@ -155,8 +115,8 @@ def add(invoice_name, invoice_id):
 def edit(pay_id, invoice_id):
 
 	form = PaymentForm(request.form)
-	formd = CreateInvoiceForm()
-	currency_label = {x[0]: x[1] for x in formd.currency.choices}
+	form_inv = CreateInvoiceForm()
+	currency_label = {x[0]: x[1] for x in form_inv.currency.choices}
 	
 	if request.method == 'POST' and form.validate():
 		with m.sql_cursor() as db:
@@ -217,8 +177,11 @@ def edit(pay_id, invoice_id):
 @login_required
 def receipt(invoice_id):
 
-	formd = PaymentForm()
-	status = {x[0]: x[1] for x in formd.status.choices}
+	form_pay = PaymentForm()
+	status = {x[0]: x[1] for x in form_pay.status.choices}
+
+	form_inv = CreateInvoiceForm()
+	currency_label = {x[0]: x[1] for x in form_inv.currency.choices}
 
 	with m.sql_cursor() as db:
 		client_invoice_details = db.query(m.Invoice.inv_id.label("invoice_id"),
@@ -251,8 +214,7 @@ def receipt(invoice_id):
 				'post_addr': client_invoice_details.post_addr,
 				'name': client_invoice_details.name,
 				'email': client_invoice_details.email,
-				'phone': client_invoice_details.phone,
-				'currency': client_invoice_details.currency
+				'phone': client_invoice_details.phone
 			}
 
 		data['cur_fmt'] = comma_separation
@@ -285,9 +247,11 @@ def receipt(invoice_id):
 		total = _amount - float(data['discount'])
 		data['total'] = total
 		data['status'] = status[client_invoice_details.status]
+		data['currency'] = currency_label[client_invoice_details.currency]
 
 		if request.method == 'GET':
-			generate_pdf(_template='receipt.html', args=items, kwargs=data)
+			generate_pdf(_template='receipt.html', args=items, 
+						 kwargs=data, email_body_template='email_receipt.html')
 			
 			msg = "Receipt has been emailed to the Customer successfully."
 			return redirect(url_for('payment.index', msg=msg))

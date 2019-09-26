@@ -24,7 +24,6 @@ from flask_login import login_required
 mod = Blueprint('client', __name__, url_prefix='/admin/client')
 
 
-
 @mod.route('/add', methods=['POST', 'GET'])
 @login_required
 def create_client():
@@ -54,23 +53,7 @@ def create_client():
 @login_required
 def edit_client(client_id):
 
-        # select query with WHERE request
-        # resp = db.query(
-        #                     m.Client.email,
-        #                     m.Client.name,
-        #                     m.Client.phone,
-        #                     m.Client.address,
-        #                     m.Client.post_addr
-        #                 ).filter_by(**param).first()
-
-        # temp_resp = resp
-
     form = CreateClientForm(request.form)
-        # form.name.data = temp_resp.name
-        # form.address.data = temp_resp.address
-        # form.email.data = temp_resp.email 
-        # form.phone.data = temp_resp.phone
-        # form.post_addr.data = temp_resp.post_addr
 
     if request.method == 'POST' and form.validate(): 
         

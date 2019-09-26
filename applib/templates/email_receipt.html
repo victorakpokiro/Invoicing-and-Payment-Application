@@ -16,21 +16,21 @@
 	<hr/> 
 	<br /> 
 	
-	
-	Payment decription / amount paid 
-	
-	Amount to Balance 
-	
+	<h3 class="text-center" style="font-weight: lighter;"> 
+		Payment Description 
+	</h3>
+	Amount Paid: {{ cur_fmt(amount_paid) }} {{ currency }} 
 
+	<br/>
+	
+	Amount to Balance: {{ cur_fmt(amount_balance) }} {{ currency }}  
+	
+	<br />
+
+	Total Amount: {{ cur_fmt(total) }} {{ currency }}  <br />
 
 
 	<br />
-
-	Total Amount:   {{ cur_fmt(total) }} {{ currency }}  <br />
-
-
-	<br />
-
 
 	A PDF copy of it has been added as an attachment <br/>
 	<br />
@@ -40,6 +40,5 @@
 	Ecardex Ventures
 
 </p>
-
 
 {% endblock %}

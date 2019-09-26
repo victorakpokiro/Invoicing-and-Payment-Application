@@ -10,6 +10,8 @@ from flask import (Blueprint, request, url_for,
 from applib.model import db_session
 from applib import model as m 
 from applib.forms import (ItemForm, DiscountFrm, CreateInvoiceForm)
+from applib.lib.helper import calc_discount 
+
 from applib.lib.helper import get_config 
 
 
@@ -22,20 +24,6 @@ mod = Blueprint('item', __name__, url_prefix='/admin/item')
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
-
-
-def calc_discount(query_disc_type, query_disc_value, query_sub_total):
-    
-    if query_disc_type == 'fixed':
-        return query_disc_value
-    elif query_disc_type == 'percent':
-        return int(query_disc_value)/100.0 * int(query_sub_total)
-
-    return 0
-
-
-
-
 
 
 @mod.route('/item/<int:invoice_id>', methods=['POST', 'GET'])
