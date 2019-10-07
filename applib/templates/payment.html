@@ -20,7 +20,7 @@
 			<th> Name </th>
 			<th> Description </th>
 			<th> Balance </th>
-			<th> Status </th>			
+			<th colspan="2"> Status </th>		
 		</tr>
 		</thead>
 		<tbody>
@@ -33,6 +33,11 @@
 				<td> {{ item.payment_desc | truncate(60) }} </td>
 				<td> {{ item.balance }} </td>
 				<td> {{ status_label[item.status] }} </td>
+				<td><a href="{{url_for('payment.receipt', 								invoice_id=item.inv_id)}}" 
+					   title=" Email Receipt "> 
+					   <i class="fa fa-envelope fa-lg"> </i> 
+					</a>
+				</td>
 			</tr>			
 		{% else %}
 			<tr>

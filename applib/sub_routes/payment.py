@@ -127,12 +127,15 @@ def edit(pay_id, invoice_id):
 			
 	with m.sql_cursor() as db:
 
-		item_details = db.query(m.Items.amount, m.Items.item_desc).filter_by(
-														invoice_id=invoice_id
-														).all()
-		invoice_query = db.query( m.Invoice.inv_id, m.Invoice.disc_type, 
-								  m.Invoice.disc_value,m.Invoice.currency
-								  ).filter_by(inv_id=invoice_id).first()
+		item_details = db.query(m.Items.amount, 
+								m.Items.item_desc
+								).filter_by(
+											invoice_id=invoice_id
+											).all()
+
+		invoice_query = db.query(m.Invoice.inv_id, m.Invoice.disc_type, 
+								 m.Invoice.disc_value,m.Invoice.currency
+								 ).filter_by(inv_id=invoice_id).first()
 		
 		data = {}
 		total = 0
@@ -200,13 +203,6 @@ def receipt(invoice_id):
 											   		m.Payment.invoice_id == invoice_id
 													).first()
 
-
-		item_for_amount = db.query(m.Items.id, m.Items.item_desc,
-								   m.Items.qty, m.Items.rate,
-								   m.Items.amount
-								  ).filter_by(invoice_id=invoice_id).all()
-
-
 		data = {
 				'invoice_no': client_invoice_details.invoice_no,
 				'date_value': client_invoice_details.date_created,
@@ -235,6 +231,7 @@ def receipt(invoice_id):
 						})
 		total = 0.00
 		_amount = 0.00
+		
 		for x in item_for_amount:
 			_amount += float(x.amount)
 
