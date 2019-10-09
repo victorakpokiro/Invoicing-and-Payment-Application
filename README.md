@@ -32,10 +32,10 @@ Send Invoice notifications via emails and optionally texts
 
 
 #### Dependcies and Installation
-SQLAlchemy and Flask-SQLAlchemy is the ORM used to connect to Postgres relational database<br />
-	<br />
-		# Postgres default uri <br />
-		# dialect+driver://username:password@host:port/database<br />
+SQLAlchemy and Flask-SQLAlchemy is the ORM used to connect to Postgres relational database<br /><br />
+
+*Postgres default uri: dialect+driver://username:password@host:port/database*<br /><br />
+
 **Install libraries with "pip install"**
 
 
