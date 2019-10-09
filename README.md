@@ -37,7 +37,7 @@ SQLAlchemy and Flask-SQLAlchemy is the ORM used to connect to Postgres relationa
 		# Postgres default uri 
 		# dialect+driver://username:password@host:port/database
 
-	"""
+	
 **Install libraries with "pip install"**
 
 
