@@ -1,5 +1,4 @@
-<br />
-## Invoicing-and-Payment-Application.
+# Invoicing-and-Payment-Application.
 <br />
 In-house web-app to Create, Issue and Track Invoices and Receipts accurately and quickly<br /><br />
 
