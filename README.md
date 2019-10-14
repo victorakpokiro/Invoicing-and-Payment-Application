@@ -38,7 +38,7 @@ SQLAlchemy and Flask-SQLAlchemy is the ORM used to connect to Postgres relationa
 
 **Install libraries with "pip install"**
 
-The Email sending section of both the Receipt and Invoice is such that after mail has being sent, the sender gets an email when the sent mail has being read(read-receipt email).
+The Email sending section of both the Receipt and Invoice is such that after mail has being sent, the sender gets a read receipt email when the message is being read
 
 *The Main Service is live but it requires code clean-up some UI works to full completion*
 
