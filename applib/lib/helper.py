@@ -17,7 +17,7 @@ import base64
 # +-------------------------+-------------------------+
 
 
-def get_config(header, key=None, filename='config.ini'):
+def get_config(header, key=None, filename='./config.ini'):
 
 	cfg = ConfigObj(filename)
 	if not key:
