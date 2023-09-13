@@ -11,8 +11,10 @@ tmp/
 __pycache__/
 
 .invoiceEnv/
+invoicedb
 
 test/
+venv/
 
 alembic/env.py
 alembic/README
